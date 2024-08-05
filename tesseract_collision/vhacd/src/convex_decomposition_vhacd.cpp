@@ -1,12 +1,10 @@
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <console_bridge/console.h>
-#include <iomanip>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_collision/bullet/convex_hull_utils.h>
 #include <tesseract_collision/vhacd/convex_decomposition_vhacd.h>
-#include <tesseract_geometry/impl/convex_mesh.h>
 
 namespace tesseract_collision
 {
@@ -25,15 +23,15 @@ public:
               const char* const stage,
               const char* operation) override
   {
-    std::cout << std::setfill(' ') << std::setw(3) << ceil(overallProgress) << "% "
-              << "[ " << stage << " " << std::setfill(' ') << std::setw(3) << ceil(stageProgress) << "% ] " << operation
-              << std::endl;
+    std::cout << std::setfill(' ') << std::setw(3) << std::lround(overallProgress + 0.5) << "% "
+              << "[ " << stage << " " << std::setfill(' ') << std::setw(3) << lround(stageProgress + 0.5) << "% ] "
+              << operation << std::endl;
   }
 };
 
 ConvexDecompositionVHACD::ConvexDecompositionVHACD(const VHACDParameters& params) : params_(params) {}
 
-std::vector<std::shared_ptr<tesseract_geometry::ConvexMesh> >
+std::vector<tesseract_geometry::ConvexMesh::Ptr>
 ConvexDecompositionVHACD::compute(const tesseract_common::VectorVector3d& vertices, const Eigen::VectorXi& faces) const
 {
   params_.print();
@@ -77,9 +75,9 @@ ConvexDecompositionVHACD::compute(const tesseract_common::VectorVector3d& vertic
   par.m_findBestPlane = params_.find_best_plane;
   par.m_callback = &progress_callback;
 
-  bool res = interfaceVHACD->Compute(points_local.data(),
+  bool res = interfaceVHACD->Compute(&points_local[0],
                                      static_cast<unsigned int>(points_local.size() / 3),
-                                     triangles_local.data(),
+                                     (const uint32_t*)(&triangles_local[0]),
                                      static_cast<unsigned int>(triangles_local.size() / 3),
                                      par);
 
@@ -94,9 +92,9 @@ ConvexDecompositionVHACD::compute(const tesseract_common::VectorVector3d& vertic
 
       auto vhacd_vertices = std::make_shared<tesseract_common::VectorVector3d>();
       vhacd_vertices->reserve(ch.m_points.size());
-      for (const auto& m_point : ch.m_points)
+      for (std::size_t i = 0; i < ch.m_points.size(); ++i)
       {
-        Eigen::Vector3d v(m_point.mX, m_point.mY, m_point.mZ);
+        Eigen::Vector3d v(ch.m_points[i].mX, ch.m_points[i].mY, ch.m_points[i].mZ);
         vhacd_vertices->push_back(v);
       }
 

@@ -28,16 +28,11 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <memory>
-#include <boost/serialization/export.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_environment/command.h>
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_environment
 {
@@ -69,5 +64,7 @@ private:
 };
 }  // namespace tesseract_environment
 
-BOOST_CLASS_EXPORT_KEY(tesseract_environment::RemoveAllowedCollisionLinkCommand)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_environment::RemoveAllowedCollisionLinkCommand, "RemoveAllowedCollisionLinkCommand")
 #endif  // TESSERACT_ENVIRONMENT_REMOVE_ALLOWED_COLLISION_LINK_COMMAND_H

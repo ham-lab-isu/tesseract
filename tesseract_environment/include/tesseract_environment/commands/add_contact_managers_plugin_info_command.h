@@ -28,17 +28,12 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <memory>
-#include <boost/serialization/export.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_environment/command.h>
-#include <tesseract_common/plugin_info.h>
-
-namespace boost::serialization
-{
-class access;
-}
+#include <tesseract_common/types.h>
 
 namespace tesseract_environment
 {
@@ -68,7 +63,9 @@ private:
   void serialize(Archive& ar, const unsigned int version);  // NOLINT
 };
 }  // namespace tesseract_environment
-
-BOOST_CLASS_EXPORT_KEY(tesseract_environment::AddContactManagersPluginInfoCommand)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_environment::AddContactManagersPluginInfoCommand,
+                        "AddContactManagersPluginInfoCommand")
 
 #endif  // TESSERACT_ENVIRONMENT_ADD_CONTACT_MANAGERS_PLUGIN_INFO_COMMAND_H

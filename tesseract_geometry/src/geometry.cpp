@@ -33,9 +33,12 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Geometry::Geometry(GeometryType type) : type_(type) {}
-
-bool Geometry::operator==(const Geometry& rhs) const { return (type_ == rhs.type_); }
+bool Geometry::operator==(const Geometry& rhs) const
+{
+  bool equal = true;
+  equal &= type_ == rhs.type_;
+  return equal;
+}
 bool Geometry::operator!=(const Geometry& rhs) const { return !operator==(rhs); }  // LCOV_EXCL_LINE
 
 template <class Archive>
@@ -46,5 +49,4 @@ void Geometry::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Geometry)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Geometry)

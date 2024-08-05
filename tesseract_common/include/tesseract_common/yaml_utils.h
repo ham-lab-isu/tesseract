@@ -30,32 +30,14 @@
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <yaml-cpp/yaml.h>
 #include <set>
+#include <console_bridge/console.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/plugin_info.h>
-#include <tesseract_common/calibration_info.h>
+#include <tesseract_common/types.h>
 #include <tesseract_common/utils.h>
 
 namespace tesseract_common
 {
-/**
- * @brief Check node map for unknown keys
- * @param node The node to check
- * @param expected_keys The expected keys
- */
-inline void checkForUnknownKeys(const YAML::Node& node, const std::set<std::string>& expected_keys)
-{
-  if (!node.IsMap())
-    throw std::runtime_error("checkForUnknownKeys, node should be a map");
-
-  for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
-  {
-    auto key = it->first.as<std::string>();
-    if (expected_keys.find(key) == expected_keys.end())
-      throw std::runtime_error("checkForUnknownKeys, unknown key: " + key);
-  }
-}
-
 /**
  * @brief Converts a YAML::Node to a yaml string
  * @param node Input node
@@ -332,7 +314,7 @@ struct convert<Eigen::VectorXd>
   static Node encode(const Eigen::VectorXd& rhs)
   {
     Node node;
-    for (long i = 0; i < static_cast<long>(rhs.size()); ++i)
+    for (long i = 0; i < rhs.size(); ++i)
       node.push_back(rhs(i));
 
     return node;
@@ -343,8 +325,8 @@ struct convert<Eigen::VectorXd>
     if (!node.IsSequence())
       return false;
 
-    rhs.resize(static_cast<long>(node.size()));
-    for (long i = 0; i < static_cast<long>(node.size()); ++i)
+    rhs.resize(static_cast<Eigen::Index>(node.size()));
+    for (long i = 0; i < node.size(); ++i)
       rhs(i) = node[i].as<double>();
 
     return true;

@@ -34,13 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Capsule::Capsule(double r, double l) : Geometry(GeometryType::CAPSULE), r_(r), l_(l) {}
-
-double Capsule::getRadius() const { return r_; }
-double Capsule::getLength() const { return l_; }
-
-Geometry::Ptr Capsule::clone() const { return std::make_shared<Capsule>(r_, l_); }
-
 bool Capsule::operator==(const Capsule& rhs) const
 {
   bool equal = true;
@@ -61,5 +54,5 @@ void Capsule::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Capsule)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Capsule)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Capsule)

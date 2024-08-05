@@ -34,15 +34,7 @@
 
 /* Author: Wim Meeussen & Levi Armstrong */
 
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/graph/depth_first_search.hpp>
-#include <console_bridge/console.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_scene_graph/kdl_parser.h>
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/joint.h>
-#include <tesseract_scene_graph/link.h>
 
 namespace tesseract_scene_graph
 {
@@ -128,7 +120,7 @@ Eigen::MatrixXd convert(const KDL::Jacobian& jacobian, const std::vector<int>& q
   return matrix;
 }
 
-KDL::Joint convert(const std::shared_ptr<const Joint>& joint)
+KDL::Joint convert(const Joint::ConstPtr& joint)
 {
   KDL::Frame parent_joint = convert(joint->parent_to_joint_origin_transform);
   const std::string& name = joint->getName();
@@ -162,7 +154,7 @@ KDL::Joint convert(const std::shared_ptr<const Joint>& joint)
   }
 }
 
-KDL::RigidBodyInertia convert(const std::shared_ptr<const Inertial>& inertial)
+KDL::RigidBodyInertia convert(const Inertial::ConstPtr& inertial)
 {
   KDL::Frame origin = convert(inertial->origin);
 

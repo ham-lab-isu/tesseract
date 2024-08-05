@@ -65,18 +65,10 @@ install(
   PATTERN "*.h"
   PATTERN "*.hpp")
 
-# Plugin should not be export only installed
-install(
-  TARGETS ${PROJECT_NAME}_kdl_factories
-  COMPONENT kdl
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
-
 configure_component(
   COMPONENT kdl
   NAMESPACE tesseract
-  TARGETS ${PROJECT_NAME}_kdl
+  TARGETS ${PROJECT_NAME}_kdl ${PROJECT_NAME}_kdl_factories
   DEPENDENCIES orocos_kdl "tesseract_kinematics COMPONENTS core")
 
 if(TESSERACT_PACKAGE)

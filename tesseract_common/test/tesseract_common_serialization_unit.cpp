@@ -39,9 +39,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_common/joint_state.h>
 #include <tesseract_common/manipulator_info.h>
 #include <tesseract_common/resource_locator.h>
-#include <tesseract_common/kinematic_limits.h>
-#include <tesseract_common/calibration_info.h>
-#include <tesseract_common/plugin_info.h>
 
 using namespace tesseract_common;
 
@@ -60,8 +57,8 @@ TEST(TesseractCommonSerializeUnit, KinematicLimits)  // NOLINT
   EXPECT_EQ(limits.acceleration_limits.rows(), 3);
 
   limits.joint_limits << -5, 5, -5, 5, -5, 5;
-  limits.velocity_limits << -6, 6, -6, 6, -6, 6;
-  limits.acceleration_limits << -7, 7, -7, 7, -7, 7;
+  limits.velocity_limits = Eigen::VectorXd::Constant(3, 6);
+  limits.acceleration_limits = Eigen::VectorXd::Constant(3, 7);
 
   tesseract_common::testSerialization<KinematicLimits>(limits, "KinematicLimits");
 }
@@ -723,8 +720,8 @@ struct TestAtomic
   }
 };
 
-BOOST_CLASS_EXPORT_IMPLEMENT(TestAtomic)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(TestAtomic)
+BOOST_CLASS_EXPORT_IMPLEMENT(TestAtomic)
 
 TEST(TesseractCommonSerializeUnit, StdAtomic)  // NOLINT
 {

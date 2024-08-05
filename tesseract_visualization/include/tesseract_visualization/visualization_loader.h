@@ -26,17 +26,11 @@
 #ifndef TESSERACT_VISUALIZATION_VISUALIZATION_LOADER_H
 #define TESSERACT_VISUALIZATION_VISUALIZATION_LOADER_H
 
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <memory>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
+#include <tesseract_visualization/visualization.h>
 #include <tesseract_common/plugin_loader.h>
 
 namespace tesseract_visualization
 {
-class Visualization;
-
 /**
  * @brief This is used to dynamically load tesseract visualizer.
  * This class must remain around for the life of the loaded visualization class.
@@ -52,7 +46,7 @@ public:
    * @param plugin_name The plugin name, if empty it tries to load default plugin
    * @return Returns nullptr if failed
    */
-  std::shared_ptr<Visualization> get(std::string plugin_name = "") const;
+  Visualization::Ptr get(std::string plugin_name = "") const;
 };
 
 }  // namespace tesseract_visualization

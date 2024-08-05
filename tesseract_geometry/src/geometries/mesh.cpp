@@ -29,89 +29,11 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <boost/serialization/nvp.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
+#include <tesseract_common/utils.h>
 #include <tesseract_geometry/impl/mesh.h>
-#include <tesseract_geometry/impl/mesh_material.h>
-#include <tesseract_common/resource_locator.h>
 
 namespace tesseract_geometry
 {
-Mesh::Mesh(std::shared_ptr<const tesseract_common::VectorVector3d> vertices,
-           std::shared_ptr<const Eigen::VectorXi> triangles,
-           std::shared_ptr<const tesseract_common::Resource> resource,
-           const Eigen::Vector3d& scale,
-           std::shared_ptr<const tesseract_common::VectorVector3d> normals,
-           std::shared_ptr<const tesseract_common::VectorVector4d> vertex_colors,
-           std::shared_ptr<MeshMaterial> mesh_material,
-           std::shared_ptr<const std::vector<std::shared_ptr<MeshTexture>>> mesh_textures)
-  : PolygonMesh(std::move(vertices),
-                std::move(triangles),
-                std::move(resource),
-                scale,
-                std::move(normals),
-                std::move(vertex_colors),
-                std::move(mesh_material),
-                std::move(mesh_textures),
-                GeometryType::MESH)
-{
-  if ((static_cast<long>(getFaceCount()) * 4) != getFaces()->size())
-    std::throw_with_nested(std::runtime_error("Mesh is not triangular"));  // LCOV_EXCL_LINE
-}
-
-Mesh::Mesh(std::shared_ptr<const tesseract_common::VectorVector3d> vertices,
-           std::shared_ptr<const Eigen::VectorXi> triangles,
-           int triangle_count,
-           std::shared_ptr<const tesseract_common::Resource> resource,
-           const Eigen::Vector3d& scale,
-           std::shared_ptr<const tesseract_common::VectorVector3d> normals,
-           std::shared_ptr<const tesseract_common::VectorVector4d> vertex_colors,
-           std::shared_ptr<MeshMaterial> mesh_material,
-           std::shared_ptr<const std::vector<std::shared_ptr<MeshTexture>>> mesh_textures)
-  : PolygonMesh(std::move(vertices),
-                std::move(triangles),
-                triangle_count,
-                std::move(resource),
-                scale,
-                std::move(normals),
-                std::move(vertex_colors),
-                std::move(mesh_material),
-                std::move(mesh_textures),
-                GeometryType::MESH)
-{
-  if ((static_cast<long>(getFaceCount()) * 4) != getFaces()->size())
-    std::throw_with_nested(std::runtime_error("Mesh is not triangular"));  // LCOV_EXCL_LINE
-}
-
-Geometry::Ptr Mesh::clone() const
-{
-  // getMaterial returns a pointer-to-const, so deference and make_shared, but also guard against nullptr
-  std::shared_ptr<Mesh> ptr;
-  if (getMaterial() != nullptr)
-  {
-    ptr = std::make_shared<Mesh>(getVertices(),
-                                 getFaces(),
-                                 getFaceCount(),
-                                 getResource(),
-                                 getScale(),
-                                 getNormals(),
-                                 getVertexColors(),
-                                 std::make_shared<MeshMaterial>(*getMaterial()),
-                                 getTextures());
-  }
-  else
-  {
-    ptr = std::make_shared<Mesh>(getVertices(),
-                                 getFaces(),
-                                 getFaceCount(),
-                                 getResource(),
-                                 getScale(),
-                                 getNormals(),
-                                 getVertexColors(),
-                                 nullptr,
-                                 getTextures());
-  }
-  return ptr;
-}
-
 bool Mesh::operator==(const Mesh& rhs) const
 {
   bool equal = true;
@@ -128,5 +50,5 @@ void Mesh::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Mesh)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Mesh)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Mesh)

@@ -36,22 +36,20 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <array>
 #include <unordered_map>
 #include <functional>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-#include <tesseract_common/fwd.h>
-#include <tesseract_common/eigen_types.h>
+#include <tesseract_geometry/geometry.h>
+#include <tesseract_common/types.h>
 #include <tesseract_common/collision_margin_data.h>
-#include <tesseract_geometry/fwd.h>
+#include <tesseract_common/allowed_collision_matrix.h>
+TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_collision
 {
-using CollisionShapeConstPtr = std::shared_ptr<const tesseract_geometry::Geometry>;
-using CollisionShapePtr = std::shared_ptr<tesseract_geometry::Geometry>;
-using CollisionShapesConst = std::vector<CollisionShapeConstPtr>;
+using CollisionShapesConst = std::vector<tesseract_geometry::Geometry::ConstPtr>;
+using CollisionShapeConstPtr = tesseract_geometry::Geometry::ConstPtr;
+using CollisionShapePtr = tesseract_geometry::Geometry::Ptr;
 using CollisionMarginData = tesseract_common::CollisionMarginData;
 using CollisionMarginOverrideType = tesseract_common::CollisionMarginOverrideType;
-using PairsCollisionMarginData =
-    std::unordered_map<std::pair<std::string, std::string>, double, tesseract_common::PairHash>;
+using PairsCollisionMarginData = tesseract_common::PairsCollisionMarginData;
 
 /**
  * @brief Should return true if contact allowed, otherwise false.
@@ -140,16 +138,16 @@ using ContactResultVector = tesseract_common::AlignedVector<ContactResult>;
 /**
  * @brief This structure hold contact results for link pairs
  * @details A custom class was implemented to avoid a large number of heap allocations during motion which avoids full
- * clearing the map. This class provides methods const container methods for access the internal map and has
+ * clearing the map. This class provides methods const container methods for access the internal unordered_map and has
  * two distinct different when it comes to the clear, size and release methods.
  *
- * The clear method does not call clear on the map but instead it loops over all entries and calls clear on
+ * The clear method does not call clear on the unordered_map but instead it loops over all entries and calls clear on
  * the vector being stored. This allows the memory to remain with the map and not get release for each of the vectors
  * stored in the map.
  *
  * The size method loops over the map and counts those that have vectors which are not empty.
  *
- * The release method actually calls clear on the internal map relasing all memory.
+ * The release method actually calls clear on the internal unordered_map relasing all memory.
  *
  * @todo This should be updated to leverage a object pool for `ContactResultVector` where in the set and add methods
  * it would check it the pair exists and if not it would pull from the object pool.
@@ -450,7 +448,7 @@ struct CollisionCheckConfig
   /** @brief Used to configure the contact manager prior to a series of checks */
   ContactManagerConfig contact_manager_config;
 
-  /** @brief ContactRequest that will be used for this check. Default test type: ALL*/
+  /** @brief ContactRequest that will be used for this check. Default test type: FIRST*/
   ContactRequest contact_request;
 
   /** @brief Specifies the type of collision check to be performed. Default: DISCRETE */
@@ -559,8 +557,6 @@ struct ContactTrajectoryResults
   ContactTrajectoryStepResults mostCollisionsStep() const;
 
   std::stringstream trajectoryCollisionResultsTable() const;
-
-  std::stringstream collisionFrequencyPerLink() const;
 
   std::vector<ContactTrajectoryStepResults> steps;
   std::vector<std::string> joint_names;

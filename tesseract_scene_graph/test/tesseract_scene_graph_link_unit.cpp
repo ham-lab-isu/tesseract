@@ -8,8 +8,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/link.h>
-
 TEST(TesseractSceneGraphUnit, TesseractSceneGraphLinkMaterialUnit)  // NOLINT
 {
   using namespace tesseract_scene_graph;
@@ -68,7 +66,7 @@ TEST(TesseractSceneGraphUnit, TesseractSceneGraphLinkVisualUnit)  // NOLINT
   Visual m;
 
   EXPECT_TRUE(m.origin.isApprox(Eigen::Isometry3d::Identity()));
-  EXPECT_TRUE(m.material == Material::getDefaultMaterial());
+  EXPECT_TRUE(m.material == DEFAULT_TESSERACT_MATERIAL);
   EXPECT_TRUE(m.geometry == nullptr);
   EXPECT_TRUE(m.name.empty());
 
@@ -80,7 +78,7 @@ TEST(TesseractSceneGraphUnit, TesseractSceneGraphLinkVisualUnit)  // NOLINT
   m.clear();
 
   EXPECT_TRUE(m.origin.isApprox(Eigen::Isometry3d::Identity()));
-  EXPECT_TRUE(m.material == Material::getDefaultMaterial());
+  EXPECT_TRUE(m.material == DEFAULT_TESSERACT_MATERIAL);
   EXPECT_TRUE(m.geometry == nullptr);
   EXPECT_TRUE(m.name.empty());
 }

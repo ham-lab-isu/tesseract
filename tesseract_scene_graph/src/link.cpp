@@ -34,29 +34,12 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_common/eigen_serialization.h>
 #include <tesseract_common/utils.h>
 #include <tesseract_scene_graph/link.h>
-#include <tesseract_geometry/geometry.h>
 
 namespace tesseract_scene_graph
 {
 /*********************************************************/
 /******                 Material                     *****/
 /*********************************************************/
-Material::Material(std::string name) : name_(std::move(name)) { this->clear(); }
-
-std::shared_ptr<Material> Material::getDefaultMaterial()
-{
-  static auto default_material = std::make_shared<Material>("default_tesseract_material");
-  return default_material;
-}
-
-const std::string& Material::getName() const { return name_; }
-
-void Material::clear()
-{
-  color = Eigen::Vector4d(0.5, 0.5, 0.5, 1.0);
-  texture_filename.clear();
-}
-
 bool Material::operator==(const Material& rhs) const
 {
   bool equal = true;
@@ -79,14 +62,6 @@ void Material::serialize(Archive& ar, const unsigned int /*version*/)
 /*********************************************************/
 /******                Inertial                      *****/
 /*********************************************************/
-
-void Inertial::clear()
-{
-  origin.setIdentity();
-  mass = 0;
-  ixx = ixy = ixz = iyy = iyz = izz = 0;
-}
-
 bool Inertial::operator==(const Inertial& rhs) const
 {
   bool equal = true;
@@ -119,17 +94,6 @@ void Inertial::serialize(Archive& ar, const unsigned int /*version*/)
 /*********************************************************/
 /******                 Visual                       *****/
 /*********************************************************/
-
-Visual::Visual() { this->clear(); }
-
-void Visual::clear()
-{
-  origin.setIdentity();
-  material = Material::getDefaultMaterial();
-  geometry.reset();
-  name.clear();
-}
-
 bool Visual::operator==(const Visual& rhs) const
 {
   bool equal = true;
@@ -154,15 +118,6 @@ void Visual::serialize(Archive& ar, const unsigned int /*version*/)
 /*********************************************************/
 /******                   Collision                  *****/
 /*********************************************************/
-Collision::Collision() { this->clear(); }
-
-void Collision::clear()
-{
-  origin.setIdentity();
-  geometry.reset();
-  name.clear();
-}
-
 bool Collision::operator==(const Collision& rhs) const
 {
   bool equal = true;
@@ -185,37 +140,6 @@ void Collision::serialize(Archive& ar, const unsigned int /*version*/)
 /*********************************************************/
 /******                     Link                     *****/
 /*********************************************************/
-Link::Link(std::string name) : name_(std::move(name)) { this->clear(); }
-
-const std::string& Link::getName() const { return name_; }
-
-void Link::clear()
-{
-  this->inertial.reset();
-  this->collision.clear();
-  this->visual.clear();
-}
-
-Link Link::clone() const { return clone(name_); }
-
-Link Link::clone(const std::string& name) const
-{
-  Link ret(name);
-  if (this->inertial)
-  {
-    ret.inertial = std::make_shared<Inertial>(*(this->inertial));
-  }
-  for (const auto& c : this->collision)
-  {
-    ret.collision.push_back(std::make_shared<Collision>(*c));
-  }
-  for (const auto& v : this->visual)
-  {
-    ret.visual.push_back(std::make_shared<Visual>(*v));
-  }
-  return ret;
-}
-
 bool Link::operator==(const Link& rhs) const
 {
   using namespace tesseract_common;
@@ -249,14 +173,17 @@ void Link::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_scene_graph
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Material)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Inertial)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Visual)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Collision)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Link)
-
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_scene_graph::Material)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Material)
+
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_scene_graph::Inertial)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Inertial)
+
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_scene_graph::Visual)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Visual)
+
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_scene_graph::Collision)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Collision)
+
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_scene_graph::Link)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_scene_graph::Link)

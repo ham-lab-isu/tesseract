@@ -32,15 +32,11 @@
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <console_bridge/console.h>
-#include <boost/graph/depth_first_search.hpp>
+#include <mutex>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_state_solver/ofkt/ofkt_state_solver.h>
-#include <tesseract_state_solver/ofkt/ofkt_node.h>
 #include <tesseract_state_solver/ofkt/ofkt_nodes.h>
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/link.h>
-#include <tesseract_scene_graph/joint.h>
 #include <tesseract_common/utils.h>
 
 namespace tesseract_scene_graph
@@ -670,8 +666,7 @@ bool OFKTStateSolver::changeJointVelocityLimits(const std::string& name, double 
 
   long idx = std::distance(active_joint_names_.begin(),
                            std::find(active_joint_names_.begin(), active_joint_names_.end(), name));
-  limits_.velocity_limits(idx, 0) = -limit;
-  limits_.velocity_limits(idx, 1) = limit;
+  limits_.velocity_limits(idx) = limit;
   return true;
 }
 
@@ -688,26 +683,7 @@ bool OFKTStateSolver::changeJointAccelerationLimits(const std::string& name, dou
 
   long idx = std::distance(active_joint_names_.begin(),
                            std::find(active_joint_names_.begin(), active_joint_names_.end(), name));
-  limits_.acceleration_limits(idx, 0) = -limit;
-  limits_.acceleration_limits(idx, 1) = limit;
-  return true;
-}
-
-bool OFKTStateSolver::changeJointJerkLimits(const std::string& name, double limit)
-{
-  std::unique_lock<std::shared_mutex> lock(mutex_);
-  auto it = nodes_.find(name);
-  if (it == nodes_.end())
-  {
-    CONSOLE_BRIDGE_logError("OFKTStateSolver, tried to change joint '%s' positioner limits which does not exist!",
-                            name.c_str());
-    return false;
-  }
-
-  long idx = std::distance(active_joint_names_.begin(),
-                           std::find(active_joint_names_.begin(), active_joint_names_.end(), name));
-  limits_.jerk_limits(idx, 0) = -limit;
-  limits_.jerk_limits(idx, 1) = limit;
+  limits_.acceleration_limits(idx) = limit;
   return true;
 }
 
@@ -829,36 +805,35 @@ void OFKTStateSolver::update(OFKTNode* node, bool update_required)
 
 void OFKTStateSolver::update(SceneState& state,
                              const OFKTNode* node,
-                             const Eigen::Isometry3d& parent_world_tf,
+                             Eigen::Isometry3d parent_world_tf,
                              bool update_required) const
 {
-  Eigen::Isometry3d updated_parent_world_tf{ Eigen::Isometry3d::Identity() };
   if (node->getType() != tesseract_scene_graph::JointType::FIXED)
   {
     double jv = state.joints[node->getJointName()];
     if (!tesseract_common::almostEqualRelativeAndAbs(node->getJointValue(), jv, 1e-8))
     {
-      updated_parent_world_tf = parent_world_tf * node->computeLocalTransformation(jv);
+      parent_world_tf = parent_world_tf * node->computeLocalTransformation(jv);
       update_required = true;
     }
     else
     {
-      updated_parent_world_tf = parent_world_tf * node->getLocalTransformation();
+      parent_world_tf = parent_world_tf * node->getLocalTransformation();
     }
   }
   else
   {
-    updated_parent_world_tf = parent_world_tf * node->getLocalTransformation();
+    parent_world_tf = parent_world_tf * node->getLocalTransformation();
   }
 
   if (update_required)
   {
-    state.link_transforms[node->getLinkName()] = updated_parent_world_tf;
-    state.joint_transforms[node->getJointName()] = updated_parent_world_tf;
+    state.link_transforms[node->getLinkName()] = parent_world_tf;
+    state.joint_transforms[node->getJointName()] = parent_world_tf;
   }
 
   for (const auto* child : node->getChildren())
-    update(state, child, updated_parent_world_tf, update_required);
+    update(state, child, parent_world_tf, update_required);
 }
 
 bool OFKTStateSolver::initHelper(const tesseract_scene_graph::SceneGraph& scene_graph, const std::string& prefix)
@@ -903,8 +878,7 @@ bool OFKTStateSolver::initHelper(const tesseract_scene_graph::SceneGraph& scene_
   return true;
 }
 
-void OFKTStateSolver::moveLinkHelper(std::vector<std::shared_ptr<const JointLimits>>& new_joint_limits,
-                                     const Joint& joint)
+void OFKTStateSolver::moveLinkHelper(std::vector<JointLimits::ConstPtr>& new_joint_limits, const Joint& joint)
 {
   auto* old_node = link_map_[joint.child_link_name];
   const std::string old_joint_name = old_node->getJointName();
@@ -947,8 +921,7 @@ void OFKTStateSolver::moveLinkHelper(std::vector<std::shared_ptr<const JointLimi
   update(replaced_node.get(), true);
 }
 
-void OFKTStateSolver::replaceJointHelper(std::vector<std::shared_ptr<const JointLimits>>& new_joint_limits,
-                                         const Joint& joint)
+void OFKTStateSolver::replaceJointHelper(std::vector<JointLimits::ConstPtr>& new_joint_limits, const Joint& joint)
 {
   auto& n = nodes_[joint.getName()];
 
@@ -1006,9 +979,8 @@ void OFKTStateSolver::removeJointHelper(const std::vector<std::string>& removed_
 
     tesseract_common::KinematicLimits l1;
     l1.joint_limits.resize(static_cast<long int>(active_joint_names_.size()), 2);
-    l1.velocity_limits.resize(static_cast<long int>(active_joint_names_.size()), 2);
-    l1.acceleration_limits.resize(static_cast<long int>(active_joint_names_.size()), 2);
-    l1.jerk_limits.resize(static_cast<long int>(active_joint_names_.size()), 2);
+    l1.velocity_limits.resize(static_cast<long int>(active_joint_names_.size()));
+    l1.acceleration_limits.resize(static_cast<long int>(active_joint_names_.size()));
 
     long cnt = 0;
     for (long i = 0; i < limits_.joint_limits.rows(); ++i)
@@ -1017,9 +989,8 @@ void OFKTStateSolver::removeJointHelper(const std::vector<std::string>& removed_
           removed_active_joints_indices.end())
       {
         l1.joint_limits.row(cnt) = limits_.joint_limits.row(i);
-        l1.velocity_limits.row(cnt) = limits_.velocity_limits.row(i);
-        l1.acceleration_limits.row(cnt) = limits_.acceleration_limits.row(i);
-        l1.jerk_limits.row(cnt) = limits_.jerk_limits.row(i);
+        l1.velocity_limits(cnt) = limits_.velocity_limits(i);
+        l1.acceleration_limits(cnt) = limits_.acceleration_limits(i);
         ++cnt;
       }
     }
@@ -1032,7 +1003,7 @@ void OFKTStateSolver::addNode(const tesseract_scene_graph::Joint& joint,
                               const std::string& joint_name,
                               const std::string& parent_link_name,
                               const std::string& child_link_name,
-                              std::vector<std::shared_ptr<const JointLimits>>& new_joint_limits)
+                              std::vector<JointLimits::ConstPtr>& new_joint_limits)
 {
   switch (joint.type)
   {
@@ -1145,7 +1116,7 @@ void OFKTStateSolver::removeNode(OFKTNode* node,
   nodes_.erase(node->getJointName());
 }
 
-void OFKTStateSolver::addNewJointLimits(const std::vector<std::shared_ptr<const JointLimits>>& new_joint_limits)
+void OFKTStateSolver::addNewJointLimits(const std::vector<JointLimits::ConstPtr>& new_joint_limits)
 {
   // Populate Joint Limits
   if (!new_joint_limits.empty())
@@ -1153,26 +1124,20 @@ void OFKTStateSolver::addNewJointLimits(const std::vector<std::shared_ptr<const 
     tesseract_common::KinematicLimits l;
     long s = limits_.joint_limits.rows() + static_cast<long>(new_joint_limits.size());
     l.joint_limits.resize(s, 2);
-    l.velocity_limits.resize(s, 2);
-    l.acceleration_limits.resize(s, 2);
-    l.jerk_limits.resize(s, 2);
+    l.velocity_limits.resize(s);
+    l.acceleration_limits.resize(s);
 
     l.joint_limits.block(0, 0, limits_.joint_limits.rows(), 2) = limits_.joint_limits;
-    l.velocity_limits.block(0, 0, limits_.velocity_limits.rows(), 2) = limits_.velocity_limits;
-    l.acceleration_limits.block(0, 0, limits_.acceleration_limits.rows(), 2) = limits_.acceleration_limits;
-    l.jerk_limits.block(0, 0, limits_.jerk_limits.rows(), 2) = limits_.jerk_limits;
+    l.velocity_limits.head(limits_.joint_limits.rows()) = limits_.velocity_limits;
+    l.acceleration_limits.head(limits_.joint_limits.rows()) = limits_.acceleration_limits;
 
     long cnt = limits_.joint_limits.rows();
     for (const auto& limits : new_joint_limits)
     {
       l.joint_limits(cnt, 0) = limits->lower;
       l.joint_limits(cnt, 1) = limits->upper;
-      l.velocity_limits(cnt, 0) = -limits->velocity;
-      l.velocity_limits(cnt, 1) = limits->velocity;
-      l.acceleration_limits(cnt, 0) = -limits->acceleration;
-      l.acceleration_limits(cnt, 1) = limits->acceleration;
-      l.jerk_limits(cnt, 0) = -limits->jerk;
-      l.jerk_limits(cnt, 1) = limits->jerk;
+      l.velocity_limits(cnt) = limits->velocity;
+      l.acceleration_limits(cnt) = limits->acceleration;
       ++cnt;
     }
     limits_ = l;

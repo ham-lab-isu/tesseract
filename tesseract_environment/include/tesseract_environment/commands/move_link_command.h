@@ -28,17 +28,12 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <memory>
-#include <boost/serialization/export.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_environment/command.h>
-#include <tesseract_scene_graph/fwd.h>
-
-namespace boost::serialization
-{
-class access;
-}
+#include <tesseract_scene_graph/joint.h>
 
 namespace tesseract_environment
 {
@@ -59,13 +54,13 @@ public:
    */
   MoveLinkCommand(const tesseract_scene_graph::Joint& joint);
 
-  const std::shared_ptr<const tesseract_scene_graph::Joint>& getJoint() const;
+  const tesseract_scene_graph::Joint::ConstPtr& getJoint() const;
 
   bool operator==(const MoveLinkCommand& rhs) const;
   bool operator!=(const MoveLinkCommand& rhs) const;
 
 private:
-  std::shared_ptr<const tesseract_scene_graph::Joint> joint_;
+  tesseract_scene_graph::Joint::ConstPtr joint_;
 
   friend class boost::serialization::access;
   template <class Archive>
@@ -73,5 +68,7 @@ private:
 };
 }  // namespace tesseract_environment
 
-BOOST_CLASS_EXPORT_KEY(tesseract_environment::MoveLinkCommand)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_environment::MoveLinkCommand, "MoveLinkCommand")
 #endif  // TESSERACT_ENVIRONMENT_MOVE_LINK_COMMAND_H

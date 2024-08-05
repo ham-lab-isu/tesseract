@@ -34,13 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Cone::Cone(double r, double l) : Geometry(GeometryType::CONE), r_(r), l_(l) {}
-
-double Cone::getRadius() const { return r_; }
-double Cone::getLength() const { return l_; }
-
-Geometry::Ptr Cone::clone() const { return std::make_shared<Cone>(r_, l_); }
-
 bool Cone::operator==(const Cone& rhs) const
 {
   bool equal = true;
@@ -61,5 +54,5 @@ void Cone::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Cone)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Cone)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Cone)

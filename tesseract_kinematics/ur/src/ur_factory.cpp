@@ -33,16 +33,13 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_kinematics/ur/ur_inv_kin.h>
 #include <tesseract_kinematics/core/types.h>
 
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/scene_state.h>
-
 namespace tesseract_kinematics
 {
-std::unique_ptr<InverseKinematics> URInvKinFactory::create(const std::string& solver_name,
-                                                           const tesseract_scene_graph::SceneGraph& scene_graph,
-                                                           const tesseract_scene_graph::SceneState& /*scene_state*/,
-                                                           const KinematicsPluginFactory& /*plugin_factory*/,
-                                                           const YAML::Node& config) const
+InverseKinematics::UPtr URInvKinFactory::create(const std::string& solver_name,
+                                                const tesseract_scene_graph::SceneGraph& scene_graph,
+                                                const tesseract_scene_graph::SceneState& /*scene_state*/,
+                                                const KinematicsPluginFactory& /*plugin_factory*/,
+                                                const YAML::Node& config) const
 {
   std::string base_link;
   std::string tip_link;

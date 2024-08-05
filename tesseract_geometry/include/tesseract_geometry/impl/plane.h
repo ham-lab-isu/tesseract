@@ -28,16 +28,12 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <boost/serialization/export.hpp>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_geometry/geometry.h>
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_geometry
 {
@@ -47,16 +43,16 @@ public:
   using Ptr = std::shared_ptr<Plane>;
   using ConstPtr = std::shared_ptr<const Plane>;
 
-  Plane(double a, double b, double c, double d);
+  Plane(double a, double b, double c, double d) : Geometry(GeometryType::PLANE), a_(a), b_(b), c_(c), d_(d) {}
   Plane() = default;
   ~Plane() override = default;
 
-  double getA() const;
-  double getB() const;
-  double getC() const;
-  double getD() const;
+  double getA() const { return a_; }
+  double getB() const { return b_; }
+  double getC() const { return c_; }
+  double getD() const { return d_; }
 
-  Geometry::Ptr clone() const override final;
+  Geometry::Ptr clone() const override final { return std::make_shared<Plane>(a_, b_, c_, d_); }
   bool operator==(const Plane& rhs) const;
   bool operator!=(const Plane& rhs) const;
 
@@ -72,5 +68,5 @@ private:
 };
 }  // namespace tesseract_geometry
 
-BOOST_CLASS_EXPORT_KEY(tesseract_geometry::Plane)
+BOOST_CLASS_EXPORT_KEY2(tesseract_geometry::Plane, "Plane")
 #endif

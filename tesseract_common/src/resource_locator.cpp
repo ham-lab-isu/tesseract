@@ -29,7 +29,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <fstream>
 #include <console_bridge/console.h>
 #include <iostream>
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
@@ -109,7 +108,7 @@ void GeneralResourceLocator::processToken(const std::string& token)
         if (package_paths_.find(dir_name) == package_paths_.end())
           package_paths_[dir_name] = dir->path().string();
 
-        dir.disable_recursion_pending();  // don't recurse into this directory.
+        dir.no_push();  // don't recurse into this directory.
       }
 
       ++dir;
@@ -153,7 +152,7 @@ std::shared_ptr<Resource> GeneralResourceLocator::locateResource(const std::stri
     }
   }
 
-  if (!tesseract_common::fs::path(mod_url).is_absolute())
+  if (!tesseract_common::fs::path(mod_url).is_complete())
   {
     CONSOLE_BRIDGE_logWarn("Resource not handled: %s", mod_url.c_str());
     return nullptr;
@@ -334,14 +333,11 @@ void BytesResource::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_common
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::ResourceLocator)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::Resource)
+TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::ResourceLocator)
+TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::GeneralResourceLocator)
+TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::Resource)
+TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::SimpleLocatedResource)
+TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::BytesResource)
 BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::GeneralResourceLocator)
 BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::SimpleLocatedResource)
 BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::BytesResource)
-
-TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::ResourceLocator)
-TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::Resource)
-TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::GeneralResourceLocator)
-TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::SimpleLocatedResource)
-TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::BytesResource)

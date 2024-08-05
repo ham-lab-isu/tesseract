@@ -34,14 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Box::Box(double x, double y, double z) : Geometry(GeometryType::BOX), x_(x), y_(y), z_(z) {}
-
-double Box::getX() const { return x_; }
-double Box::getY() const { return y_; }
-double Box::getZ() const { return z_; }
-
-Geometry::Ptr Box::clone() const { return std::make_shared<Box>(x_, y_, z_); }
-
 bool Box::operator==(const Box& rhs) const
 {
   bool equal = true;
@@ -64,5 +56,5 @@ void Box::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Box)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Box)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Box)

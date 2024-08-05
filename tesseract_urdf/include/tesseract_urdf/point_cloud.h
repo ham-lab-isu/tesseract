@@ -31,14 +31,18 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/fwd.h>
-#include <tesseract_geometry/fwd.h>
+#include <tesseract_geometry/impl/octree.h>
 
 namespace tinyxml2
 {
 class XMLElement;  // NOLINT
 class XMLDocument;
 }  // namespace tinyxml2
+
+namespace tesseract_common
+{
+class ResourceLocator;
+}
 
 namespace tesseract_urdf
 {
@@ -53,7 +57,7 @@ namespace tesseract_urdf
  */
 std::shared_ptr<tesseract_geometry::Octree> parsePointCloud(const tinyxml2::XMLElement* xml_element,
                                                             const tesseract_common::ResourceLocator& locator,
-                                                            tesseract_geometry::OctreeSubType shape_type,
+                                                            tesseract_geometry::Octree::SubType shape_type,
                                                             bool prune,
                                                             int version);
 }  // namespace tesseract_urdf

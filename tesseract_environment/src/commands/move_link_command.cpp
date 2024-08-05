@@ -31,9 +31,8 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_environment/commands/move_link_command.h>
 #include <tesseract_common/utils.h>
-#include <tesseract_scene_graph/joint.h>
+#include <tesseract_environment/commands/move_link_command.h>
 
 namespace tesseract_environment
 {
@@ -64,5 +63,5 @@ void MoveLinkCommand::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_environment
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::MoveLinkCommand)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_environment::MoveLinkCommand)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::MoveLinkCommand)

@@ -28,18 +28,13 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <boost/serialization/export.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_common
 {
@@ -240,11 +235,11 @@ private:
 };
 
 }  // namespace tesseract_common
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(tesseract_common::ResourceLocator)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::ResourceLocator)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::Resource)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::GeneralResourceLocator)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::SimpleLocatedResource)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::BytesResource)
+
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_common::GeneralResourceLocator, "GeneralResourceLocator")
+BOOST_CLASS_EXPORT_KEY2(tesseract_common::SimpleLocatedResource, "SimpleLocatedResource")
+BOOST_CLASS_EXPORT_KEY2(tesseract_common::BytesResource, "BytesResource")
 
 #endif  // TESSERACT_COMMON_RESOURCE_LOCATOR_H

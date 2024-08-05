@@ -34,13 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Cylinder::Cylinder(double r, double l) : Geometry(GeometryType::CYLINDER), r_(r), l_(l) {}
-
-double Cylinder::getRadius() const { return r_; }
-double Cylinder::getLength() const { return l_; }
-
-Geometry::Ptr Cylinder::clone() const { return std::make_shared<Cylinder>(r_, l_); }
-
 bool Cylinder::operator==(const Cylinder& rhs) const
 {
   bool equal = true;
@@ -61,5 +54,5 @@ void Cylinder::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Cylinder)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Cylinder)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Cylinder)

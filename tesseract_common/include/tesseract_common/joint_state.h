@@ -28,15 +28,10 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/export.hpp>
 #include <Eigen/Core>
 #include <vector>
+#include <boost/serialization/base_object.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_common
 {
@@ -74,6 +69,10 @@ private:
   void serialize(Archive& ar, const unsigned int version);  // NOLINT
 };
 
+}  // namespace tesseract_common
+
+namespace tesseract_common
+{
 /** @brief Represents a joint trajectory */
 class JointTrajectory
 {
@@ -235,6 +234,4 @@ private:
 
 }  // namespace tesseract_common
 
-BOOST_CLASS_EXPORT_KEY(tesseract_common::JointState)
-BOOST_CLASS_EXPORT_KEY(tesseract_common::JointTrajectory)
 #endif  // TESSERACT_COMMON_JOINT_STATE_H

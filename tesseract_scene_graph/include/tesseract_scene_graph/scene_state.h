@@ -32,19 +32,14 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/export.hpp>
+#include <boost/serialization/access.hpp>
 #include <Eigen/Core>
 #include <unordered_map>
 #include <vector>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/eigen_types.h>
-
-namespace boost::serialization
-{
-class access;
-}
+#include <tesseract_common/types.h>
 
 namespace tesseract_scene_graph
 {
@@ -87,5 +82,7 @@ private:
 };
 }  // namespace tesseract_scene_graph
 
-BOOST_CLASS_EXPORT_KEY(tesseract_scene_graph::SceneState)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_scene_graph::SceneState, "SceneState")
 #endif  // TESSERACT_SCENE_GRAPH_SCENE_STATE_H

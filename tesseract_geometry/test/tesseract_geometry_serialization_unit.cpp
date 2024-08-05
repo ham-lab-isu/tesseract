@@ -26,7 +26,6 @@
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <gtest/gtest.h>
 #include <boost/serialization/shared_ptr.hpp>
-#include <octomap/octomap.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_common/serialization.h>
@@ -34,7 +33,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_common/utils.h>
 #include <tesseract_geometry/geometries.h>
 #include <tesseract_geometry/mesh_parser.h>
-#include <tesseract_geometry/impl/octree_utils.h>
 #include <tesseract_support/tesseract_support_resource_locator.h>
 
 using namespace tesseract_geometry;
@@ -109,16 +107,14 @@ TEST(TesseractGeometrySerializeUnit, Octree)  // NOLINT
   pc.points.emplace_back(-.5, -0.5, -0.5);
   pc.points.emplace_back(-.5, 0.5, 0.5);
   {
-    auto octree = tesseract_geometry::createOctree(pc, 1, false, true);
-    auto object = std::make_shared<tesseract_geometry::Octree>(
-        std::move(octree), tesseract_geometry::OctreeSubType::BOX, false, true);
+    auto object =
+        std::make_shared<tesseract_geometry::Octree>(pc, 1, tesseract_geometry::Octree::SubType::BOX, false, true);
     tesseract_common::testSerialization<Octree>(*object, "Binary_Octree");
     tesseract_common::testSerializationDerivedClass<Geometry, Octree>(object, "Binary_Octree");
   }
   {
-    auto octree = tesseract_geometry::createOctree(pc, 1, false, false);
-    auto object = std::make_shared<tesseract_geometry::Octree>(
-        std::move(octree), tesseract_geometry::OctreeSubType::BOX, false, false);
+    auto object =
+        std::make_shared<tesseract_geometry::Octree>(pc, 1, tesseract_geometry::Octree::SubType::BOX, false, false);
     tesseract_common::testSerialization<Octree>(*object, "Full_Octree");
     tesseract_common::testSerializationDerivedClass<Geometry, Octree>(object, "Full_Octree");
   }

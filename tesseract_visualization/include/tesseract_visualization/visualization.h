@@ -26,16 +26,11 @@
 #ifndef TESSERACT_VISUALIZATION_VISUALIZATION_H
 #define TESSERACT_VISUALIZATION_VISUALIZATION_H
 
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <memory>
-#include <vector>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-#include <tesseract_common/fwd.h>
-#include <tesseract_environment/fwd.h>
-#include <tesseract_scene_graph/fwd.h>
-#include <tesseract_state_solver/fwd.h>
+#include <tesseract_common/joint_state.h>
+#include <tesseract_collision/core/types.h>
+#include <tesseract_scene_graph/graph.h>
+#include <tesseract_environment/environment.h>
+#include <tesseract_visualization/markers/marker.h>
 
 // clang-format off
 #define TESSERACT_ADD_VISUALIZATION_PLUGIN(DERIVED_CLASS, ALIAS)                                                       \
@@ -44,8 +39,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_visualization
 {
-class Marker;
-
 /** @brief The Vizualization class */
 class Visualization
 {
@@ -105,7 +98,7 @@ public:
    * @param markers The markers to plot
    * @param ns The namespace to plot the objects under
    */
-  virtual void plotMarkers(const std::vector<std::shared_ptr<Marker>>& markers, std::string ns = "") = 0;
+  virtual void plotMarkers(const std::vector<Marker::Ptr>& markers, std::string ns = "") = 0;
 
   /**
    * @brief This is called at the start of the plotting for each iteration

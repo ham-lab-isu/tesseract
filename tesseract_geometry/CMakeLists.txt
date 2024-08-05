@@ -70,7 +70,6 @@ add_library(
   src/geometries/cone.cpp
   src/geometries/convex_mesh.cpp
   src/geometries/cylinder.cpp
-  src/geometries/mesh_material.cpp
   src/geometries/mesh.cpp
   src/geometries/octree.cpp
   src/geometries/plane.cpp

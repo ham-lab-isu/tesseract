@@ -24,15 +24,7 @@
  * limitations under the License.
  */
 
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <console_bridge/console.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
 #include <tesseract_kinematics/kdl/kdl_utils.h>
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/joint.h>
-#include <tesseract_scene_graph/kdl_parser.h>
 
 namespace tesseract_kinematics
 {
@@ -51,6 +43,8 @@ void KDLToEigen(const KDL::Frame& frame, Eigen::Isometry3d& transform)
 
 void EigenToKDL(const Eigen::Isometry3d& transform, KDL::Frame& frame)
 {
+  frame.Identity();
+
   for (int i = 0; i < 3; ++i)
     frame.p[i] = transform(i, 3);
 

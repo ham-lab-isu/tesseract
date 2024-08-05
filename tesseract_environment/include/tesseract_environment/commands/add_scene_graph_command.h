@@ -28,17 +28,12 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <memory>
-#include <boost/serialization/export.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_environment/command.h>
-#include <tesseract_scene_graph/fwd.h>
-
-namespace boost::serialization
-{
-class access;
-}
+#include <tesseract_scene_graph/graph.h>
 
 namespace tesseract_environment
 {
@@ -75,16 +70,16 @@ public:
                        const tesseract_scene_graph::Joint& joint,
                        std::string prefix = "");
 
-  const std::shared_ptr<const tesseract_scene_graph::SceneGraph>& getSceneGraph() const;
-  const std::shared_ptr<const tesseract_scene_graph::Joint>& getJoint() const;
+  const tesseract_scene_graph::SceneGraph::ConstPtr& getSceneGraph() const;
+  const tesseract_scene_graph::Joint::ConstPtr& getJoint() const;
   const std::string& getPrefix() const;
 
   bool operator==(const AddSceneGraphCommand& rhs) const;
   bool operator!=(const AddSceneGraphCommand& rhs) const;
 
 private:
-  std::shared_ptr<const tesseract_scene_graph::SceneGraph> scene_graph_;
-  std::shared_ptr<const tesseract_scene_graph::Joint> joint_;
+  tesseract_scene_graph::SceneGraph::ConstPtr scene_graph_;
+  tesseract_scene_graph::Joint::ConstPtr joint_;
   std::string prefix_;
 
   friend class boost::serialization::access;
@@ -92,7 +87,8 @@ private:
   void serialize(Archive& ar, const unsigned int version);  // NOLINT
 };
 }  // namespace tesseract_environment
-
-BOOST_CLASS_EXPORT_KEY(tesseract_environment::AddSceneGraphCommand)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_environment::AddSceneGraphCommand, "AddSceneGraphCommand")
 
 #endif  // TESSERACT_ENVIRONMENT_ADD_SCENE_GRAPH_COMMAND_H

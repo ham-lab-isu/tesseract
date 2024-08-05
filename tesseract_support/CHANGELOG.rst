@@ -2,29 +2,6 @@
 Changelog for package tesseract_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-* Cleanup boost serialization
-* Use latest vcpkg release for GitHub Action (`#1035 <https://github.com/tesseract-robotics/tesseract/issues/1035>`_)
-  * Use latest vcpkg release in windows action
-  * ci
-  * Fix deprecated boost filesystem functions
-* Contributors: John Wason, Levi Armstrong
-
-0.23.0 (2024-07-24)
--------------------
-
-0.22.2 (2024-06-10)
--------------------
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Contributors: Levi Armstrong
-
 0.21.5 (2023-12-14)
 -------------------
 

@@ -26,9 +26,10 @@
 #ifndef TESSERACT_KINEMATICS_VALIDATE_H
 #define TESSERACT_KINEMATICS_VALIDATE_H
 
+#include <tesseract_kinematics/core/kinematic_group.h>
+
 namespace tesseract_kinematics
 {
-class KinematicGroup;
 /**
  * @brief This compares calcFwdKin to calcInvKin for a KinematicGroup.
  *

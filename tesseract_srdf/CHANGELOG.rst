@@ -2,26 +2,6 @@
 Changelog for package tesseract_srdf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-* Cleanup boost serialization
-* Contributors: Levi Armstrong
-
-0.23.0 (2024-07-24)
--------------------
-
-0.22.2 (2024-06-10)
--------------------
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Add support for jerk limits
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Contributors: Levi Armstrong
-
 0.21.5 (2023-12-14)
 -------------------
 * Add Mac OSX support (`#969 <https://github.com/tesseract-robotics/tesseract/issues/969>`_)

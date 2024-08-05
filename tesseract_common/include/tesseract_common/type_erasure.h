@@ -28,17 +28,13 @@
 
 #include <memory>
 #include <typeindex>
-#include <boost/stacktrace.hpp>
-#include <boost/core/demangle.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/serialization/assume_abstract.hpp>
 #include <boost/serialization/unique_ptr.hpp>
+#include <tesseract_common/serialization.h>
 
 namespace tesseract_common
 {
-struct Serialization;
-
 /** @brief This is the interface that all type erasures interfaces must inherit from */
 struct TypeErasureInterface
 {
@@ -63,9 +59,7 @@ private:
   friend class boost::serialization::access;
   friend struct tesseract_common::Serialization;
   template <class Archive>
-  void serialize(Archive& /*ar*/, const unsigned int /*version*/)
-  {
-  }  // NOLINT
+  void serialize(Archive& /*ar*/, const unsigned int /*version*/){};  // NOLINT
 };
 
 template <typename ConcreteType, typename ConceptInterface>
@@ -74,7 +68,7 @@ struct TypeErasureInstance : ConceptInterface
   using ConceptValueType = ConcreteType;
   using ConceptInterfaceType = ConceptInterface;
 
-  TypeErasureInstance() = default;  // NOLINT(cppcoreguidelines-pro-type-member-init)
+  TypeErasureInstance() = default;
 
   explicit TypeErasureInstance(ConcreteType value) : value_(std::move(value)) {}
 
@@ -156,7 +150,7 @@ public:
   {
   }
 
-  TypeErasureBase() : value_(nullptr) {}  // NOLINT
+  TypeErasureBase() : value_(nullptr){};  // NOLINT
 
   // Destructor
   ~TypeErasureBase() = default;
@@ -219,11 +213,10 @@ public:
   T& as()
   {
     if (getType() != typeid(T))
-      throw std::runtime_error("TypeErasureBase, tried to cast '" + boost::core::demangle(getType().name()) + "' to '" +
-                               boost::core::demangle(typeid(T).name()) + "'\nBacktrace:\n" +
-                               boost::stacktrace::to_string(boost::stacktrace::stacktrace()) + "\n");
+      throw std::runtime_error("TypeErasureBase, tried to cast '" + std::string(getType().name()) + "' to '" +
+                               std::string(typeid(T).name()) + "'!");
 
-    auto* p = static_cast<uncvref_t<T>*>(value_->recover());  // NOLINT
+    auto* p = static_cast<uncvref_t<T>*>(value_->recover());
     return *p;
   }
 
@@ -231,11 +224,10 @@ public:
   const T& as() const
   {
     if (getType() != typeid(T))
-      throw std::runtime_error("TypeErasureBase, tried to cast '" + boost::core::demangle(getType().name()) + "' to '" +
-                               boost::core::demangle(typeid(T).name()) + "'\nBacktrace:\n" +
-                               boost::stacktrace::to_string(boost::stacktrace::stacktrace()) + "\n");
+      throw std::runtime_error("TypeErasureBase, tried to cast '" + std::string(getType().name()) + "' to '" +
+                               std::string(typeid(T).name()) + "'!");
 
-    const auto* p = static_cast<const uncvref_t<T>*>(value_->recover());  // NOLINT
+    const auto* p = static_cast<const uncvref_t<T>*>(value_->recover());
     return *p;
   }
 

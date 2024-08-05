@@ -25,19 +25,11 @@
  */
 #ifndef TESSERACT_ENVIRONMENT_EVENTS_H
 #define TESSERACT_ENVIRONMENT_EVENTS_H
-
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <memory>
-#include <vector>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-#include <tesseract_scene_graph/fwd.h>
+#include <tesseract_environment/command.h>
+#include <tesseract_scene_graph/scene_state.h>
 
 namespace tesseract_environment
 {
-class Command;
-
 enum class Events
 {
   COMMAND_APPLIED = 0,
@@ -47,12 +39,8 @@ enum class Events
 /** @brief The event base class */
 struct Event
 {
-  Event(Events type);
+  Event(Events type) : type(type) {}
   virtual ~Event() = default;
-  Event(const Event&) = default;
-  Event& operator=(const Event&) = delete;
-  Event(Event&&) = default;
-  Event& operator=(Event&&) = delete;
 
   const Events type;
 };
@@ -63,9 +51,12 @@ struct Event
  */
 struct CommandAppliedEvent : public Event
 {
-  CommandAppliedEvent(const std::vector<std::shared_ptr<const Command>>& commands, int revision);
+  CommandAppliedEvent(const Commands& commands, int revision)
+    : Event(Events::COMMAND_APPLIED), commands(commands), revision(revision)
+  {
+  }
 
-  const std::vector<std::shared_ptr<const Command>>& commands;
+  const Commands& commands;
   int revision;
 };
 
@@ -75,11 +66,15 @@ struct CommandAppliedEvent : public Event
  */
 struct SceneStateChangedEvent : public Event
 {
-  SceneStateChangedEvent(const tesseract_scene_graph::SceneState& state);
+  SceneStateChangedEvent(const tesseract_scene_graph::SceneState& state)
+    : Event(Events::SCENE_STATE_CHANGED), state(state)
+  {
+  }
 
   const tesseract_scene_graph::SceneState& state;
 };
 
+using EventCallbackFn = std::function<void(const Event& event)>;
 }  // namespace tesseract_environment
 
 #endif  // TESSERACT_ENVIRONMENT_EVENTS_H

@@ -67,7 +67,7 @@ private:
 
   static tesseract_common::JointState interpolate(const tesseract_common::JointState& start,
                                                   const tesseract_common::JointState& end,
-                                                  double f);
+                                                  double t);
 };
 }  // namespace tesseract_visualization
 #endif  // TESSERACT_VISUALIZATION_TRAJECTORY_INTERPOLATOR_H

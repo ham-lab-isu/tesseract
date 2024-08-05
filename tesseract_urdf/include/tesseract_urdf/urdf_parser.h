@@ -26,14 +26,8 @@
 #ifndef TESSERACT_URDF_URDF_PARSER_H
 #define TESSERACT_URDF_URDF_PARSER_H
 
-#include <tesseract_common/macros.h>
-TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <string>
-#include <memory>
-TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-#include <tesseract_scene_graph/fwd.h>
-#include <tesseract_common/fwd.h>
+#include <tesseract_scene_graph/graph.h>
+#include <tesseract_common/resource_locator.h>
 
 namespace tesseract_urdf
 {
@@ -45,8 +39,8 @@ namespace tesseract_urdf
  * the nested exception.
  * @return Tesseract Scene Graph, nullptr if failed to parse URDF
  */
-std::unique_ptr<tesseract_scene_graph::SceneGraph> parseURDFString(const std::string& urdf_xml_string,
-                                                                   const tesseract_common::ResourceLocator& locator);
+tesseract_scene_graph::SceneGraph::UPtr parseURDFString(const std::string& urdf_xml_string,
+                                                        const tesseract_common::ResourceLocator& locator);
 
 /**
  * @brief Parse a URDF file into a Tesseract Scene Graph
@@ -56,10 +50,10 @@ std::unique_ptr<tesseract_scene_graph::SceneGraph> parseURDFString(const std::st
  * the nested exception.
  * @return Tesseract Scene Graph, nullptr if failed to parse URDF
  */
-std::unique_ptr<tesseract_scene_graph::SceneGraph> parseURDFFile(const std::string& path,
-                                                                 const tesseract_common::ResourceLocator& locator);
+tesseract_scene_graph::SceneGraph::UPtr parseURDFFile(const std::string& path,
+                                                      const tesseract_common::ResourceLocator& locator);
 
-void writeURDFFile(const std::shared_ptr<const tesseract_scene_graph::SceneGraph>& sg,
+void writeURDFFile(const tesseract_scene_graph::SceneGraph::ConstPtr& sg,
                    const std::string& package_path,
                    const std::string& urdf_name = "");
 }  // namespace tesseract_urdf

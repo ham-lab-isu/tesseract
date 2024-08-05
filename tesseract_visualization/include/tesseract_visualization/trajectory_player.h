@@ -29,25 +29,17 @@
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <chrono>
-#include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/fwd.h>
+#include <tesseract_visualization/trajectory_interpolator.h>
 
 namespace tesseract_visualization
 {
-class TrajectoryInterpolator;
-
 /** @brief Enables the ability to play a trajectory provided by the set program */
 class TrajectoryPlayer
 {
 public:
-  TrajectoryPlayer();
-  ~TrajectoryPlayer();
-  TrajectoryPlayer(const TrajectoryPlayer&) = delete;
-  TrajectoryPlayer& operator=(const TrajectoryPlayer&) = delete;
-  TrajectoryPlayer(TrajectoryPlayer&&) = default;
-  TrajectoryPlayer& operator=(TrajectoryPlayer&&) = default;
+  TrajectoryPlayer() = default;
 
   /**
    * @brief Set the the trajectory for the trajectory player
@@ -95,16 +87,10 @@ public:
   double currentDuration() const;
 
   /**
-   * @brief Get the trajectory duration at the begin state
+   * @brief Get the trajectory duration
    * @return The trajectory duration
    */
-  double trajectoryDurationBegin() const;
-
-  /**
-   * @brief Get the trajectory duration at the end state
-   * @return The trajectory duration
-   */
-  double trajectoryDurationEnd() const;
+  double trajectoryDuration() const;
 
   /**
    * @brief Check if the player has the reached the end of the trajectory
@@ -131,9 +117,8 @@ public:
   long size() const;
 
 private:
-  std::unique_ptr<TrajectoryInterpolator> trajectory_{ nullptr };
-  double trajectory_duration_start_{ 0 };
-  double trajectory_duration_end_{ 0 };
+  TrajectoryInterpolator::UPtr trajectory_{ nullptr };
+  double trajectory_duration_{ 0 };
   double current_duration_{ 0 };
   double scale_{ 1 };
   bool loop_{ false };

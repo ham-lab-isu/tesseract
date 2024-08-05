@@ -30,7 +30,7 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/export.hpp>
+#include <boost/serialization/access.hpp>
 #include <Eigen/Core>
 #include <string>
 #include <unordered_map>
@@ -38,11 +38,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_common/types.h>
 #include <tesseract_common/utils.h>
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_common
 {
@@ -83,21 +78,38 @@ public:
   using Ptr = std::shared_ptr<CollisionMarginData>;
   using ConstPtr = std::shared_ptr<const CollisionMarginData>;
 
-  CollisionMarginData(double default_collision_margin = 0);
-  CollisionMarginData(double default_collision_margin, PairsCollisionMarginData pair_collision_margins);
-  CollisionMarginData(PairsCollisionMarginData pair_collision_margins);
+  CollisionMarginData(double default_collision_margin = 0)
+    : default_collision_margin_(default_collision_margin), max_collision_margin_(default_collision_margin)
+  {
+  }
+
+  CollisionMarginData(double default_collision_margin, PairsCollisionMarginData pair_collision_margins)
+    : default_collision_margin_(default_collision_margin), lookup_table_(std::move(pair_collision_margins))
+  {
+    updateMaxCollisionMargin();
+  }
+
+  CollisionMarginData(PairsCollisionMarginData pair_collision_margins)
+    : lookup_table_(std::move(pair_collision_margins))
+  {
+    updateMaxCollisionMargin();
+  }
 
   /**
    * @brief Set the default collision margin
    * @param default_collision_margin New default collision margin
    */
-  void setDefaultCollisionMargin(double default_collision_margin);
+  void setDefaultCollisionMargin(double default_collision_margin)
+  {
+    default_collision_margin_ = default_collision_margin;
+    updateMaxCollisionMargin();
+  }
 
   /**
    * @brief Get the default collision margin
    * @return default collision margin
    */
-  double getDefaultCollisionMargin() const;
+  double getDefaultCollisionMargin() const { return default_collision_margin_; }
 
   /**
    * @brief Set the margin for a given contact pair
@@ -109,7 +121,12 @@ public:
    * @param obj2 The Second object name. Order doesn't matter
    * @param collision_margin contacts with distance < collision_margin are considered in collision
    */
-  void setPairCollisionMargin(const std::string& obj1, const std::string& obj2, double collision_margin);
+  void setPairCollisionMargin(const std::string& obj1, const std::string& obj2, double collision_margin)
+  {
+    auto key = tesseract_common::makeOrderedLinkPair(obj1, obj2);
+    lookup_table_[key] = collision_margin;
+    updateMaxCollisionMargin();
+  }
 
   /**
    * @brief Get the pairs collision margin data
@@ -120,13 +137,23 @@ public:
    * @param obj2 The second object name
    * @return A Vector2d[Contact Distance Threshold, Coefficient]
    */
-  double getPairCollisionMargin(const std::string& obj1, const std::string& obj2) const;
+  double getPairCollisionMargin(const std::string& obj1, const std::string& obj2) const
+  {
+    thread_local LinkNamesPair key;
+    tesseract_common::makeOrderedLinkPair(key, obj1, obj2);
+    const auto it = lookup_table_.find(key);
+
+    if (it != lookup_table_.end())
+      return it->second;
+
+    return default_collision_margin_;
+  }
 
   /**
    * @brief Get Collision Margin Data for stored pairs
    * @return A map of link pairs collision margin data
    */
-  const PairsCollisionMarginData& getPairCollisionMargins() const;
+  const PairsCollisionMarginData& getPairCollisionMargins() const { return lookup_table_; }
 
   /**
    * @brief Get the largest collision margin
@@ -135,26 +162,82 @@ public:
    *
    * @return Max contact distance threshold
    */
-  double getMaxCollisionMargin() const;
+  double getMaxCollisionMargin() const { return max_collision_margin_; }
 
   /**
    * @brief Increment all margins by input amount. Useful for inflating or reducing margins
    * @param increment Amount to increment margins
    */
-  void incrementMargins(const double& increment);
+  void incrementMargins(const double& increment)
+  {
+    default_collision_margin_ += increment;
+    max_collision_margin_ += increment;
+    for (auto& pair : lookup_table_)
+      pair.second += increment;
+  }
 
   /**
    * @brief Scale all margins by input value
    * @param scale Value by which all margins are multiplied
    */
-  void scaleMargins(const double& scale);
+  void scaleMargins(const double& scale)
+  {
+    default_collision_margin_ *= scale;
+    max_collision_margin_ *= scale;
+    for (auto& pair : lookup_table_)
+      pair.second *= scale;
+  }
 
   /**
    * @brief Apply the contents of the provide CollisionMarginData based on the override type
    * @param collision_margin_data The collision margin data to apply
    * @param override_type The type indicating how the provided data should be applied.
    */
-  void apply(const CollisionMarginData& collision_margin_data, CollisionMarginOverrideType override_type);
+  void apply(const CollisionMarginData& collision_margin_data, CollisionMarginOverrideType override_type)
+  {
+    switch (override_type)
+    {
+      case CollisionMarginOverrideType::REPLACE:
+      {
+        *this = collision_margin_data;
+        break;
+      }
+      case CollisionMarginOverrideType::MODIFY:
+      {
+        default_collision_margin_ = collision_margin_data.default_collision_margin_;
+
+        for (const auto& p : collision_margin_data.lookup_table_)
+          lookup_table_[p.first] = p.second;
+
+        updateMaxCollisionMargin();
+        break;
+      }
+      case CollisionMarginOverrideType::OVERRIDE_DEFAULT_MARGIN:
+      {
+        default_collision_margin_ = collision_margin_data.default_collision_margin_;
+        updateMaxCollisionMargin();
+        break;
+      }
+      case CollisionMarginOverrideType::OVERRIDE_PAIR_MARGIN:
+      {
+        lookup_table_ = collision_margin_data.lookup_table_;
+        updateMaxCollisionMargin();
+        break;
+      }
+      case CollisionMarginOverrideType::MODIFY_PAIR_MARGIN:
+      {
+        for (const auto& p : collision_margin_data.lookup_table_)
+          lookup_table_[p.first] = p.second;
+
+        updateMaxCollisionMargin();
+        break;
+      }
+      case CollisionMarginOverrideType::NONE:
+      {
+        break;
+      }
+    }
+  }
 
   bool operator==(const CollisionMarginData& rhs) const;
   bool operator!=(const CollisionMarginData& rhs) const;
@@ -170,12 +253,22 @@ private:
   PairsCollisionMarginData lookup_table_;
 
   /** @brief Update the max collision margin */
-  void updateMaxCollisionMargin();
-
+  void updateMaxCollisionMargin()
+  {
+    max_collision_margin_ = default_collision_margin_;
+    for (const auto& p : lookup_table_)
+    {
+      if (p.second > max_collision_margin_)
+        max_collision_margin_ = p.second;
+    }
+  }
   friend class boost::serialization::access;
   template <class Archive>
   void serialize(Archive& ar, const unsigned int version);  // NOLINT
 };
 }  // namespace tesseract_common
-BOOST_CLASS_EXPORT_KEY(tesseract_common::CollisionMarginData)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_common::CollisionMarginData, "CollisionMarginData")
+
 #endif  // TESSERACT_COMMON_COLLISION_MARGIN_DATA_H

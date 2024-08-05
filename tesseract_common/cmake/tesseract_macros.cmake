@@ -80,7 +80,7 @@ macro(tesseract_variables)
           -Wsign-conversion
           -Wno-sign-compare
           -Wnon-virtual-dtor)
-      execute_process(COMMAND uname -p OUTPUT_VARIABLE CMAKE_SYSTEM_NAME2)
+      exec_program(uname ARGS -p OUTPUT_VARIABLE CMAKE_SYSTEM_NAME2)
       if(NOT
          CMAKE_SYSTEM_NAME2
          MATCHES
@@ -95,13 +95,12 @@ macro(tesseract_variables)
              "unknown")
         set(TESSERACT_COMPILE_OPTIONS_PUBLIC -mno-avx)
       endif()
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
       set(TESSERACT_COMPILE_OPTIONS_PRIVATE
           -Wall
           -Wextra
           -Wconversion
           -Wsign-conversion)
-      set(TESSERACT_COMPILE_DEFINITIONS "BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED")
       message(WARNING "Non-GNU compiler detected. If using AVX instructions, Eigen alignment issues may result.")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
       set(TESSERACT_COMPILE_DEFINITIONS "_USE_MATH_DEFINES=ON")
@@ -118,7 +117,7 @@ macro(tesseract_variables)
           -Werror=sign-conversion
           -Wno-sign-compare
           -Werror=non-virtual-dtor)
-      execute_process(COMMAND uname -p OUTPUT_VARIABLE CMAKE_SYSTEM_NAME2)
+      exec_program(uname ARGS -p OUTPUT_VARIABLE CMAKE_SYSTEM_NAME2)
       if(NOT
          CMAKE_SYSTEM_NAME2
          MATCHES
@@ -133,13 +132,12 @@ macro(tesseract_variables)
              "unknown")
         set(TESSERACT_COMPILE_OPTIONS_PUBLIC -mno-avx)
       endif()
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
       set(TESSERACT_COMPILE_OPTIONS_PRIVATE
           -Werror=all
           -Werror=extra
           -Werror=conversion
           -Werror=sign-conversion)
-      set(TESSERACT_COMPILE_DEFINITIONS "BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED")
       message(WARNING "Non-GNU compiler detected. If using AVX instructions, Eigen alignment issues may result.")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
       set(TESSERACT_COMPILE_DEFINITIONS "_USE_MATH_DEFINES=ON")

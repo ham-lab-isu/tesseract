@@ -1,6 +1,5 @@
 #include <console_bridge/console.h>
 #include <tesseract_geometry/geometries.h>
-#include <octomap/OcTree.h>
 #include <iostream>
 
 using namespace tesseract_geometry;
@@ -43,5 +42,5 @@ int main(int /*argc*/, char** /*argv*/)
 
   // Create an octree
   std::shared_ptr<const octomap::OcTree> octree;
-  auto octree_t = std::make_shared<tesseract_geometry::Octree>(octree, tesseract_geometry::OctreeSubType::BOX);
+  auto octree_t = std::make_shared<tesseract_geometry::Octree>(octree, tesseract_geometry::Octree::SubType::BOX);
 }

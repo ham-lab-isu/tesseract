@@ -28,17 +28,19 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <memory>
-#include <Eigen/Core>
+#include <console_bridge/console.h>
+
+#include <tesseract_scene_graph/graph.h>
+#include <tesseract_scene_graph/scene_state.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_scene_graph/fwd.h>
 #include <tesseract_kinematics/core/inverse_kinematics.h>
+#include <tesseract_kinematics/core/forward_kinematics.h>
+#include <tesseract_kinematics/core/types.h>
 
 namespace tesseract_kinematics
 {
 static const std::string DEFAULT_ROP_INV_KIN_SOLVER_NAME = "ROPInvKin";
-class ForwardKinematics;
 
 /**
  * @brief Robot on Positioner Inverse kinematic implementation.
@@ -77,7 +79,7 @@ public:
             const tesseract_scene_graph::SceneState& scene_state,
             InverseKinematics::UPtr manipulator,
             double manipulator_reach,
-            std::unique_ptr<ForwardKinematics> positioner,
+            ForwardKinematics::UPtr positioner,
             const Eigen::VectorXd& positioner_sample_resolution,
             std::string solver_name = DEFAULT_ROP_INV_KIN_SOLVER_NAME);
 
@@ -98,7 +100,7 @@ public:
             const tesseract_scene_graph::SceneState& scene_state,
             InverseKinematics::UPtr manipulator,
             double manipulator_reach,
-            std::unique_ptr<ForwardKinematics> positioner,
+            ForwardKinematics::UPtr positioner,
             const Eigen::MatrixX2d& positioner_sample_range,
             const Eigen::VectorXd& positioner_sample_resolution,
             std::string solver_name = DEFAULT_ROP_INV_KIN_SOLVER_NAME);
@@ -117,7 +119,7 @@ public:
 private:
   std::vector<std::string> joint_names_;
   InverseKinematics::UPtr manip_inv_kin_;
-  std::unique_ptr<ForwardKinematics> positioner_fwd_kin_;
+  ForwardKinematics::UPtr positioner_fwd_kin_;
   std::string manip_tip_link_;
   std::string positioner_tip_link_;
   double manip_reach_{ 0 };
@@ -130,7 +132,7 @@ private:
             const tesseract_scene_graph::SceneState& scene_state,
             InverseKinematics::UPtr manipulator,
             double manipulator_reach,
-            std::unique_ptr<ForwardKinematics> positioner,
+            ForwardKinematics::UPtr positioner,
             const Eigen::MatrixX2d& poitioner_sample_range,
             const Eigen::VectorXd& positioner_sample_resolution,
             std::string solver_name = DEFAULT_ROP_INV_KIN_SOLVER_NAME);

@@ -23,8 +23,7 @@ inline void addCollisionObjects(DiscreteContactManager& checker)
   /////////////////////////////////////////////////////////////////
   std::string path = std::string(TESSERACT_SUPPORT_DIR) + "/meshes/box_2m.bt";
   auto ot = std::make_shared<octomap::OcTree>(path);
-  CollisionShapePtr dense_octomap =
-      std::make_shared<tesseract_geometry::Octree>(ot, tesseract_geometry::OctreeSubType::BOX);
+  CollisionShapePtr dense_octomap = std::make_shared<tesseract_geometry::Octree>(ot, tesseract_geometry::Octree::BOX);
   Eigen::Isometry3d octomap_pose;
   octomap_pose.setIdentity();
 

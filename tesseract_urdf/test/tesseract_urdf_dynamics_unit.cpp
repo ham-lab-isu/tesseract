@@ -4,7 +4,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <Eigen/Geometry>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_scene_graph/joint.h>
 #include <tesseract_urdf/dynamics.h>
 #include "tesseract_urdf_common_unit.h"
 

@@ -33,8 +33,7 @@ namespace tesseract_collision::tesseract_collision_fcl
 class FCLDiscreteBVHManagerFactory : public DiscreteContactManagerFactory
 {
 public:
-  std::unique_ptr<DiscreteContactManager> create(const std::string& name,
-                                                 const YAML::Node& config) const override final;
+  DiscreteContactManager::UPtr create(const std::string& name, const YAML::Node& config) const override final;
 };
 
 TESSERACT_PLUGIN_ANCHOR_DECL(FCLFactoriesAnchor)

@@ -30,7 +30,6 @@
  */
 
 #include <tesseract_state_solver/ofkt/ofkt_nodes.h>
-#include <tesseract_scene_graph/joint.h>
 #include <tesseract_common/utils.h>
 
 namespace tesseract_scene_graph
@@ -38,12 +37,12 @@ namespace tesseract_scene_graph
 /*********************************************************************/
 /*************************** BASE NODE *******************************/
 /*********************************************************************/
-OFKTBaseNode::OFKTBaseNode(JointType type, OFKTNode* parent, std::string link_name)
+OFKTBaseNode::OFKTBaseNode(tesseract_scene_graph::JointType type, OFKTNode* parent, std::string link_name)
   : type_(type), parent_(parent), link_name_(std::move(link_name))
 {
 }
 
-OFKTBaseNode::OFKTBaseNode(JointType type,
+OFKTBaseNode::OFKTBaseNode(tesseract_scene_graph::JointType type,
                            OFKTNode* parent,
                            std::string link_name,
                            std::string joint_name,
@@ -83,7 +82,7 @@ double OFKTBaseNode::getJointValue() const { return joint_value_; }
 
 bool OFKTBaseNode::hasJointValueChanged() const { return joint_value_changed_; }
 
-void OFKTBaseNode::setStaticTransformation(const Eigen::Isometry3d& static_tf)
+void OFKTBaseNode::setStaticTransformation(Eigen::Isometry3d static_tf)
 {
   static_tf_ = static_tf;
   local_tf_ = static_tf_ * joint_tf_;
@@ -144,7 +143,7 @@ void OFKTRootNode::storeJointValue(double /*joint_value*/)
   throw std::runtime_error("OFKTRootNode: does not have a joint value!");
 }
 
-void OFKTRootNode::setStaticTransformation(const Eigen::Isometry3d& /*static_tf*/)
+void OFKTRootNode::setStaticTransformation(Eigen::Isometry3d /*static_tf*/)
 {
   throw std::runtime_error("OFKTRootNode: does not have a static transform!");
 }
@@ -178,7 +177,7 @@ void OFKTFixedNode::storeJointValue(double /*joint_value*/)
 
 double OFKTFixedNode::getJointValue() const { throw std::runtime_error("OFKTFixedNode: does not have a joint value!"); }
 
-void OFKTFixedNode::setStaticTransformation(const Eigen::Isometry3d& static_tf)
+void OFKTFixedNode::setStaticTransformation(Eigen::Isometry3d static_tf)
 {
   static_tf_ = static_tf;
   local_tf_ = static_tf;

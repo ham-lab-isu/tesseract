@@ -31,9 +31,8 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <sstream>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_kinematics/core/validate.h>
 #include <tesseract_common/utils.h>
-#include <tesseract_kinematics/core/kinematic_group.h>
+#include <tesseract_kinematics/core/validate.h>
 
 namespace tesseract_kinematics
 {

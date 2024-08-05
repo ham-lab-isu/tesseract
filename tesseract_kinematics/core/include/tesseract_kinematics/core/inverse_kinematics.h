@@ -31,10 +31,11 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <vector>
 #include <string>
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/eigen_types.h>
+#include <tesseract_common/types.h>
 #include <tesseract_kinematics/core/types.h>
 
 namespace tesseract_kinematics
@@ -53,7 +54,7 @@ public:
   using ConstUPtr = std::unique_ptr<const InverseKinematics>;
 
   InverseKinematics() = default;
-  virtual ~InverseKinematics();
+  virtual ~InverseKinematics() = default;
   InverseKinematics(const InverseKinematics&) = default;
   InverseKinematics& operator=(const InverseKinematics&) = default;
   InverseKinematics(InverseKinematics&&) = default;

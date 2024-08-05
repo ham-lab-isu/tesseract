@@ -34,12 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Sphere::Sphere(double r) : Geometry(GeometryType::SPHERE), r_(r) {}
-
-double Sphere::getRadius() const { return r_; }
-
-Geometry::Ptr Sphere::clone() const { return std::make_shared<Sphere>(r_); }
-
 bool Sphere::operator==(const Sphere& rhs) const
 {
   bool equal = true;
@@ -58,5 +52,5 @@ void Sphere::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Sphere)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Sphere)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Sphere)

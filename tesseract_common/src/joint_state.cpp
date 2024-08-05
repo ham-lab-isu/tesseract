@@ -25,7 +25,6 @@
  */
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
@@ -179,7 +178,5 @@ void JointTrajectory::serialize(Archive& ar, const unsigned int version)  // NOL
 }  // namespace tesseract_common
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::JointState)
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::JointTrajectory)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::JointState)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::JointTrajectory)

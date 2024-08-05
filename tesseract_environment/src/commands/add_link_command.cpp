@@ -31,10 +31,8 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_environment/commands/add_link_command.h>
 #include <tesseract_common/utils.h>
-#include <tesseract_scene_graph/link.h>
-#include <tesseract_scene_graph/joint.h>
+#include <tesseract_environment/commands/add_link_command.h>
 
 namespace tesseract_environment
 {
@@ -63,8 +61,8 @@ AddLinkCommand::AddLinkCommand(const tesseract_scene_graph::Link& link,
   /** @todo if joint is not fixed we should verify that limits are provided */
 }
 
-const std::shared_ptr<const tesseract_scene_graph::Link>& AddLinkCommand::getLink() const { return link_; }
-const std::shared_ptr<const tesseract_scene_graph::Joint>& AddLinkCommand::getJoint() const { return joint_; }
+const tesseract_scene_graph::Link::ConstPtr& AddLinkCommand::getLink() const { return link_; }
+const tesseract_scene_graph::Joint::ConstPtr& AddLinkCommand::getJoint() const { return joint_; }
 bool AddLinkCommand::replaceAllowed() const { return replace_allowed_; }
 
 bool AddLinkCommand::operator==(const AddLinkCommand& rhs) const
@@ -89,5 +87,5 @@ void AddLinkCommand::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_environment
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::AddLinkCommand)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_environment::AddLinkCommand)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::AddLinkCommand)

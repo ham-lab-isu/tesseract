@@ -28,16 +28,12 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <boost/serialization/export.hpp>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_geometry/geometry.h>
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_geometry
 {
@@ -47,14 +43,14 @@ public:
   using Ptr = std::shared_ptr<Cylinder>;
   using ConstPtr = std::shared_ptr<const Cylinder>;
 
-  Cylinder(double r, double l);
+  Cylinder(double r, double l) : Geometry(GeometryType::CYLINDER), r_(r), l_(l) {}
   Cylinder() = default;
   ~Cylinder() override = default;
 
-  double getRadius() const;
-  double getLength() const;
+  double getRadius() const { return r_; }
+  double getLength() const { return l_; }
 
-  Geometry::Ptr clone() const override final;
+  Geometry::Ptr clone() const override final { return std::make_shared<Cylinder>(r_, l_); }
   bool operator==(const Cylinder& rhs) const;
   bool operator!=(const Cylinder& rhs) const;
 
@@ -68,5 +64,5 @@ private:
 };
 }  // namespace tesseract_geometry
 
-BOOST_CLASS_EXPORT_KEY(tesseract_geometry::Cylinder)
+BOOST_CLASS_EXPORT_KEY2(tesseract_geometry::Cylinder, "Cylinder")
 #endif

@@ -40,14 +40,14 @@ template <class Archive>
 void save(Archive& ar, const CommandType& g, const unsigned int /*version*/)
 {
   int value = static_cast<int>(g);
-  ar& BOOST_SERIALIZATION_NVP(value);
+  ar &= BOOST_SERIALIZATION_NVP(value);
 }
 
 template <class Archive>
 void load(Archive& ar, CommandType& g, const unsigned int /*version*/)
 {
   int value = 0;
-  ar& BOOST_SERIALIZATION_NVP(value);
+  ar &= BOOST_SERIALIZATION_NVP(value);
   g = static_cast<CommandType>(value);
 }
 
@@ -73,5 +73,4 @@ void Command::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_environment
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::Command)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_environment::Command)

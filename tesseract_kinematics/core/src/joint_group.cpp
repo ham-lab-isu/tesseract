@@ -31,12 +31,7 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_kinematics/core/joint_group.h>
 #include <tesseract_common/utils.h>
 
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/joint.h>
-#include <tesseract_scene_graph/link.h>
 #include <tesseract_scene_graph/kdl_parser.h>
-
-#include <tesseract_state_solver/kdl/kdl_state_solver.h>
 
 namespace tesseract_kinematics
 {
@@ -81,12 +76,8 @@ JointGroup::JointGroup(std::string name,
     // Set limits
     limits_.joint_limits(i, 0) = joint->limits->lower;
     limits_.joint_limits(i, 1) = joint->limits->upper;
-    limits_.velocity_limits(i, 0) = -joint->limits->velocity;
-    limits_.velocity_limits(i, 1) = joint->limits->velocity;
-    limits_.acceleration_limits(i, 0) = -joint->limits->acceleration;
-    limits_.acceleration_limits(i, 1) = joint->limits->acceleration;
-    limits_.jerk_limits(i, 0) = -joint->limits->jerk;
-    limits_.jerk_limits(i, 1) = joint->limits->jerk;
+    limits_.velocity_limits(i) = joint->limits->velocity;
+    limits_.acceleration_limits(i) = joint->limits->acceleration;
 
     // Set redundancy indices
     switch (joint->type)
@@ -103,8 +94,6 @@ JointGroup::JointGroup(std::string name,
   if (static_link_names_.size() + active_link_names.size() != scene_graph.getLinks().size())
     throw std::runtime_error("JointGroup: Static link names are not correct!");
 }
-
-JointGroup::~JointGroup() = default;
 
 JointGroup::JointGroup(const JointGroup& other) { *this = other; }
 
@@ -287,8 +276,8 @@ tesseract_common::KinematicLimits JointGroup::getLimits() const { return limits_
 void JointGroup::setLimits(const tesseract_common::KinematicLimits& limits)
 {
   Eigen::Index nj = numJoints();
-  if (limits.joint_limits.rows() != nj || limits.velocity_limits.rows() != nj ||
-      limits.acceleration_limits.rows() != nj || limits.jerk_limits.rows() != nj)
+  if (limits.joint_limits.rows() != nj || limits.velocity_limits.size() != nj ||
+      limits.acceleration_limits.size() != nj)
     throw std::runtime_error("Kinematics Group limits assigned are invalid!");
 
   limits_ = limits;

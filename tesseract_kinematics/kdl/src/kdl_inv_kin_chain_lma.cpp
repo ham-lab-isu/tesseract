@@ -25,13 +25,14 @@
  */
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <console_bridge/console.h>
-#include <tesseract_scene_graph/graph.h>
+#include <kdl/segment.hpp>
 #include <tesseract_scene_graph/kdl_parser.h>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_kinematics/kdl/kdl_inv_kin_chain_lma.h>
+#include <tesseract_kinematics/kdl/kdl_utils.h>
+#include <tesseract_kinematics/core/utils.h>
 
 namespace tesseract_kinematics
 {
@@ -40,9 +41,8 @@ using Eigen::VectorXd;
 
 KDLInvKinChainLMA::KDLInvKinChainLMA(const tesseract_scene_graph::SceneGraph& scene_graph,
                                      const std::vector<std::pair<std::string, std::string>>& chains,
-                                     Config kdl_config,
                                      std::string solver_name)
-  : kdl_config_(kdl_config), solver_name_(std::move(solver_name))
+  : solver_name_(std::move(solver_name))
 {
   if (!scene_graph.getLink(scene_graph.getRoot()))
     throw std::runtime_error("The scene graph has an invalid root.");
@@ -51,20 +51,14 @@ KDLInvKinChainLMA::KDLInvKinChainLMA(const tesseract_scene_graph::SceneGraph& sc
     throw std::runtime_error("Failed to parse KDL data from Scene Graph");
 
   // Create KDL IK Solver
-  ik_solver_ =
-      std::make_unique<KDL::ChainIkSolverPos_LMA>(kdl_data_.robot_chain,
-                                                  Eigen::Matrix<double, 6, 1>{ kdl_config_.task_weights.data() },
-                                                  kdl_config_.eps,
-                                                  kdl_config_.max_iterations,
-                                                  kdl_config_.eps_joints);
+  ik_solver_ = std::make_unique<KDL::ChainIkSolverPos_LMA>(kdl_data_.robot_chain);
 }
 
 KDLInvKinChainLMA::KDLInvKinChainLMA(const tesseract_scene_graph::SceneGraph& scene_graph,
                                      const std::string& base_link,
                                      const std::string& tip_link,
-                                     Config kdl_config,
                                      std::string solver_name)
-  : KDLInvKinChainLMA(scene_graph, { std::make_pair(base_link, tip_link) }, kdl_config, std::move(solver_name))
+  : KDLInvKinChainLMA(scene_graph, { std::make_pair(base_link, tip_link) }, std::move(solver_name))
 {
 }
 
@@ -75,13 +69,7 @@ KDLInvKinChainLMA::KDLInvKinChainLMA(const KDLInvKinChainLMA& other) { *this = o
 KDLInvKinChainLMA& KDLInvKinChainLMA::operator=(const KDLInvKinChainLMA& other)
 {
   kdl_data_ = other.kdl_data_;
-  kdl_config_ = other.kdl_config_;
-  ik_solver_ =
-      std::make_unique<KDL::ChainIkSolverPos_LMA>(kdl_data_.robot_chain,
-                                                  Eigen::Matrix<double, 6, 1>{ kdl_config_.task_weights.data() },
-                                                  kdl_config_.eps,
-                                                  kdl_config_.max_iterations,
-                                                  kdl_config_.eps_joints);
+  ik_solver_ = std::make_unique<KDL::ChainIkSolverPos_LMA>(kdl_data_.robot_chain);
   solver_name_ = other.solver_name_;
 
   return *this;
@@ -92,8 +80,7 @@ IKSolutions KDLInvKinChainLMA::calcInvKinHelper(const Eigen::Isometry3d& pose,
                                                 int /*segment_num*/) const
 {
   assert(std::abs(1.0 - pose.matrix().determinant()) < 1e-6);  // NOLINT
-  KDL::JntArray kdl_seed;
-  KDL::JntArray kdl_solution;
+  KDL::JntArray kdl_seed, kdl_solution;
   EigenToKDL(seed, kdl_seed);
   kdl_solution.resize(static_cast<unsigned>(seed.size()));
   Eigen::VectorXd solution(seed.size());

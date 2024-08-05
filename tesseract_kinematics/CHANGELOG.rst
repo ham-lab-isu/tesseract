@@ -2,36 +2,6 @@
 Changelog for package tesseract_kinematics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-
-0.23.0 (2024-07-24)
--------------------
-* Do not export plugin libraries (`#1028 <https://github.com/tesseract-robotics/tesseract/issues/1028>`_)
-* Fixes for building on Ubuntu Noble (`#1016 <https://github.com/tesseract-robotics/tesseract/issues/1016>`_)
-* Contributors: Levi Armstrong, Roelof Oomen
-
-0.22.2 (2024-06-10)
--------------------
-* Add backtrace to type erasure casting to quickly identify where the issue location
-* Contributors: Levi Armstrong
-
-0.22.1 (2024-06-03)
--------------------
-* - Also add KDL parameters to KDLInvKinChainNR_JL (see `#843 <https://github.com/tesseract-robotics/tesseract/issues/843>`_)
-  - Some clang_tidy and typo fixes
-* Contributors: Roelof Oomen
-
-0.22.0 (2024-06-02)
--------------------
-* Add the ability to change KDL parameters from kinematics configuration (`#843 <https://github.com/tesseract-robotics/tesseract/issues/843>`_)
-  Co-authored-by: Levi Armstrong <levi.armstrong@gmail.com>
-* Add support for jerk limits
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Remove ineffective frame.Identity() call
-  See `#984 <https://github.com/tesseract-robotics/tesseract/issues/984>`_
-* Contributors: Levi Armstrong, Roelof, Sean Cardello
-
 0.21.5 (2023-12-14)
 -------------------
 

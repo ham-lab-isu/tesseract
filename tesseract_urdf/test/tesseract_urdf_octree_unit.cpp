@@ -3,10 +3,8 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <gtest/gtest.h>
 #include <Eigen/Geometry>
 #include <tesseract_common/utils.h>
-#include <octomap/OcTree.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_geometry/impl/octree.h>
 #include <tesseract_urdf/octree.h>
 #include <tesseract_urdf/octomap.h>
 #include <tesseract_support/tesseract_support_resource_locator.h>
@@ -38,7 +36,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::BOX);
+    EXPECT_TRUE(geom->getSubType() == geom->BOX);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 8);
   }
@@ -50,7 +48,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::BOX);
+    EXPECT_TRUE(geom->getSubType() == geom->BOX);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 8);
   }
@@ -62,7 +60,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::SPHERE_INSIDE);
+    EXPECT_TRUE(geom->getSubType() == geom->SPHERE_INSIDE);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 8);
   }
@@ -75,7 +73,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::BOX);
+    EXPECT_TRUE(geom->getSubType() == geom->BOX);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 1000);
     EXPECT_NEAR(geom->getOctree()->getResolution(), 0.1, 1e-5);
@@ -88,7 +86,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::BOX);
+    EXPECT_TRUE(geom->getSubType() == geom->BOX);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 496);
     EXPECT_NEAR(geom->getOctree()->getResolution(), 0.1, 1e-5);
@@ -111,7 +109,7 @@ TEST(TesseractURDFUnit, parse_octree)  // NOLINT
     tesseract_geometry::Octree::Ptr geom;
     EXPECT_TRUE(runTest<tesseract_geometry::Octree::Ptr>(
         geom, &tesseract_urdf::parseOctomap, str, "octomap", resource_locator, 2, true));
-    EXPECT_TRUE(geom->getSubType() == tesseract_geometry::OctreeSubType::SPHERE_OUTSIDE);
+    EXPECT_TRUE(geom->getSubType() == geom->SPHERE_OUTSIDE);
     EXPECT_TRUE(geom->getOctree() != nullptr);
     EXPECT_EQ(geom->calcNumSubShapes(), 8);
   }
@@ -173,7 +171,7 @@ TEST(TesseractURDFUnit, write_octree)  // NOLINT
 {
   {
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::BOX);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::BOX);
     std::string text;
     EXPECT_EQ(0,
               writeTest<tesseract_geometry::Octree::Ptr>(
@@ -183,7 +181,7 @@ TEST(TesseractURDFUnit, write_octree)  // NOLINT
 
   {  // Trigger failed-to-write
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::BOX);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::BOX);
     std::string text;
     EXPECT_EQ(1,
               writeTest<tesseract_geometry::Octree::Ptr>(
@@ -205,7 +203,7 @@ TEST(TesseractURDFUnit, write_octomap)  // NOLINT
 {
   {  // box
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::BOX);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::BOX);
     std::string text;
     EXPECT_EQ(0,
               writeTest<tesseract_geometry::Octree::Ptr>(
@@ -215,7 +213,7 @@ TEST(TesseractURDFUnit, write_octomap)  // NOLINT
 
   {  // sphere inside
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::SPHERE_INSIDE);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::SPHERE_INSIDE);
     std::string text;
     EXPECT_EQ(0,
               writeTest<tesseract_geometry::Octree::Ptr>(
@@ -225,7 +223,7 @@ TEST(TesseractURDFUnit, write_octomap)  // NOLINT
 
   {  // sphere outside
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::SPHERE_OUTSIDE);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::SPHERE_OUTSIDE);
     std::string text;
     EXPECT_EQ(0,
               writeTest<tesseract_geometry::Octree::Ptr>(
@@ -235,7 +233,7 @@ TEST(TesseractURDFUnit, write_octomap)  // NOLINT
 
   {  // Trigger failed-to-write
     tesseract_geometry::Octree::Ptr geom = std::make_shared<tesseract_geometry::Octree>(
-        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::OctreeSubType::BOX);
+        std::make_shared<octomap::OcTree>(1.0), tesseract_geometry::Octree::SubType::BOX);
     std::string text;
     EXPECT_EQ(1,
               writeTest<tesseract_geometry::Octree::Ptr>(

@@ -35,7 +35,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <boost/serialization/unordered_map.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_common/utils.h>
 #include <tesseract_common/eigen_serialization.h>
 #include <tesseract_srdf/kinematics_information.h>
 
@@ -261,5 +260,5 @@ void KinematicsInformation::serialize(Archive& ar, const unsigned int /*version*
 }  // namespace tesseract_srdf
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_srdf::KinematicsInformation)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_srdf::KinematicsInformation)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_srdf::KinematicsInformation)

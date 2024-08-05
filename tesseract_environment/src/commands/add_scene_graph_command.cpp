@@ -32,10 +32,8 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <string>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_environment/commands/add_scene_graph_command.h>
 #include <tesseract_common/utils.h>
-#include <tesseract_scene_graph/graph.h>
-#include <tesseract_scene_graph/joint.h>
+#include <tesseract_environment/commands/add_scene_graph_command.h>
 
 namespace tesseract_environment
 {
@@ -59,11 +57,8 @@ AddSceneGraphCommand::AddSceneGraphCommand(const tesseract_scene_graph::SceneGra
 {
 }
 
-const std::shared_ptr<const tesseract_scene_graph::SceneGraph>& AddSceneGraphCommand::getSceneGraph() const
-{
-  return scene_graph_;
-}
-const std::shared_ptr<const tesseract_scene_graph::Joint>& AddSceneGraphCommand::getJoint() const { return joint_; }
+const tesseract_scene_graph::SceneGraph::ConstPtr& AddSceneGraphCommand::getSceneGraph() const { return scene_graph_; }
+const tesseract_scene_graph::Joint::ConstPtr& AddSceneGraphCommand::getJoint() const { return joint_; }
 const std::string& AddSceneGraphCommand::getPrefix() const { return prefix_; }
 
 bool AddSceneGraphCommand::operator==(const AddSceneGraphCommand& rhs) const
@@ -88,5 +83,5 @@ void AddSceneGraphCommand::serialize(Archive& ar, const unsigned int /*version*/
 }  // namespace tesseract_environment
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::AddSceneGraphCommand)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_environment::AddSceneGraphCommand)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_environment::AddSceneGraphCommand)

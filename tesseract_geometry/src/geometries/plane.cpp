@@ -34,15 +34,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 namespace tesseract_geometry
 {
-Plane::Plane(double a, double b, double c, double d) : Geometry(GeometryType::PLANE), a_(a), b_(b), c_(c), d_(d) {}
-
-double Plane::getA() const { return a_; }
-double Plane::getB() const { return b_; }
-double Plane::getC() const { return c_; }
-double Plane::getD() const { return d_; }
-
-Geometry::Ptr Plane::clone() const { return std::make_shared<Plane>(a_, b_, c_, d_); }
-
 bool Plane::operator==(const Plane& rhs) const
 {
   bool equal = true;
@@ -67,5 +58,5 @@ void Plane::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_geometry
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Plane)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_geometry::Plane)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_geometry::Plane)

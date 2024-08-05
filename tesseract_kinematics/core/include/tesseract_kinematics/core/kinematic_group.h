@@ -33,11 +33,10 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_kinematics/core/joint_group.h>
-#include <tesseract_kinematics/core/types.h>
+#include <tesseract_kinematics/core/inverse_kinematics.h>
 
 namespace tesseract_kinematics
 {
-class InverseKinematics;
 /**
  * @brief Structure containing the data required to solve inverse kinematics
  * @details This structure provides the ability to specify IK targets for arbitrary tool links and defined with respect
@@ -51,7 +50,10 @@ struct KinGroupIKInput
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   // LCOV_EXCL_STOP
 
-  KinGroupIKInput(const Eigen::Isometry3d& p, std::string wf, std::string tl);
+  KinGroupIKInput(const Eigen::Isometry3d& p, std::string wf, std::string tl)
+    : pose(p), working_frame(std::move(wf)), tip_link_name(std::move(tl))
+  {
+  }
 
   KinGroupIKInput() = default;
 
@@ -84,7 +86,7 @@ public:
   using UPtr = std::unique_ptr<KinematicGroup>;
   using ConstUPtr = std::unique_ptr<const KinematicGroup>;
 
-  ~KinematicGroup() override;
+  ~KinematicGroup() override = default;
   KinematicGroup(const KinematicGroup& other);
   KinematicGroup& operator=(const KinematicGroup& other);
   KinematicGroup(KinematicGroup&&) = default;
@@ -99,7 +101,7 @@ public:
    */
   KinematicGroup(std::string name,
                  std::vector<std::string> joint_names,
-                 std::unique_ptr<InverseKinematics> inv_kin,
+                 InverseKinematics::UPtr inv_kin,
                  const tesseract_scene_graph::SceneGraph& scene_graph,
                  const tesseract_scene_graph::SceneState& scene_state);
 
@@ -147,7 +149,7 @@ private:
   std::vector<std::string> joint_names_;
   bool reorder_required_{ false };
   std::vector<Eigen::Index> inv_kin_joint_map_;
-  std::unique_ptr<InverseKinematics> inv_kin_;
+  InverseKinematics::UPtr inv_kin_;
   Eigen::Isometry3d inv_to_fwd_base_{ Eigen::Isometry3d::Identity() };
   std::vector<std::string> working_frames_;
   std::unordered_map<std::string, std::string> inv_tip_links_map_;

@@ -2,33 +2,6 @@
 Changelog for package tesseract_environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-* Cleanup boost serialization
-* Add export implementation environment command
-* Contributors: Levi Armstrong
-
-0.23.0 (2024-07-24)
--------------------
-* Add any poly support for environment
-* Fixes for building on Ubuntu Noble (`#1016 <https://github.com/tesseract-robotics/tesseract/issues/1016>`_)
-* Contributors: Levi Armstrong, Roelof Oomen
-
-0.22.2 (2024-06-10)
--------------------
-* Fix command serialization
-* Contributors: Levi Armstrong
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Add more clone benchmarks
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Add kinematics benchmarks
-* Contributors: Levi Armstrong
-
 0.21.5 (2023-12-14)
 -------------------
 

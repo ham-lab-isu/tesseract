@@ -26,7 +26,6 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -52,9 +51,6 @@ TESSERACT_COMMON_IGNORE_WARNINGS_POP
 #include <tesseract_common/utils.h>
 #include <tesseract_common/yaml_utils.h>
 #include <tesseract_common/eigen_serialization.h>
-#include <tesseract_common/resource_locator.h>
-#include <tesseract_common/collision_margin_data.h>
-#include <tesseract_scene_graph/graph.h>
 
 namespace tesseract_srdf
 {
@@ -95,8 +91,8 @@ void SRDFModel::initString(const tesseract_scene_graph::SceneGraph& scene_graph,
                            const tesseract_common::ResourceLocator& locator)
 {
   tinyxml2::XMLDocument xml_doc;
-  int status = xml_doc.Parse(xmlstring.c_str());
-  if (status != tinyxml2::XML_SUCCESS)
+  tinyxml2::XMLError status = xml_doc.Parse(xmlstring.c_str());
+  if (status != tinyxml2::XMLError::XML_SUCCESS)
     std::throw_with_nested(std::runtime_error("SRDF: Failed to create XMLDocument from xml string!"));
 
   clear();
@@ -407,8 +403,8 @@ bool SRDFModel::saveToFile(const std::string& file_path) const
   }
 
   doc.InsertFirstChild(xml_root);
-  int status = doc.SaveFile(file_path.c_str());
-  if (status != tinyxml2::XML_SUCCESS)
+  tinyxml2::XMLError status = doc.SaveFile(file_path.c_str());
+  if (status != tinyxml2::XMLError::XML_SUCCESS)
   {
     // LCOV_EXCL_START
     CONSOLE_BRIDGE_logError("Failed to save SRDF XML File: %s", file_path.c_str());
@@ -459,5 +455,5 @@ void SRDFModel::serialize(Archive& ar, const unsigned int /*version*/)
 }  // namespace tesseract_srdf
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_srdf::SRDFModel)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_srdf::SRDFModel)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_srdf::SRDFModel)

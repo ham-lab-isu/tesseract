@@ -2,38 +2,6 @@
 Changelog for package tesseract_collision
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-
-0.23.0 (2024-07-24)
--------------------
-* Do not export plugin libraries (`#1028 <https://github.com/tesseract-robotics/tesseract/issues/1028>`_)
-* Contributors: Levi Armstrong
-
-0.22.2 (2024-06-10)
--------------------
-* Add ability to briefly summarize trajectory collisions (`#1011 <https://github.com/tesseract-robotics/tesseract/issues/1011>`_)
-* Contributors: Tyler Marr
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Fix 2 for older bullet versions (e.g. on Ubuntu Focal)
-* Fix for older bullet versions (e.g. on Ubuntu Focal)
-* - Apply [bugfix](https://github.com/bulletphysics/bullet3/commit/fce12964139c8073676a50db0201c1460ad3fcad) and [bugfix](https://github.com/bulletphysics/bullet3/commit/a808d7489500935ac6665dcfe930c43a2008566b) from bullet
-  - Clang-tidy fix
-* Fix map type in comment of ContactResultMap
-  See `#991 <https://github.com/tesseract-robotics/tesseract/issues/991>`_
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Added application for performing convex decomposition (`#968 <https://github.com/tesseract-robotics/tesseract/issues/968>`_)
-* Fix default test type in comment (`#980 <https://github.com/tesseract-robotics/tesseract/issues/980>`_)
-* clang-format
-* - Fixes rounding errors in progress logging (went up to 101%)
-  - Fixes some clang-tidy suggestions
-* Contributors: Levi Armstrong, Michael Ripperger, Roelof, Roelof Oomen
-
 0.21.5 (2023-12-14)
 -------------------
 * Add Mac OSX support (`#969 <https://github.com/tesseract-robotics/tesseract/issues/969>`_)

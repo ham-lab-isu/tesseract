@@ -2,50 +2,6 @@
 Changelog for package tesseract_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-* Cleanup boost serialization
-* Use latest vcpkg release for GitHub Action (`#1035 <https://github.com/tesseract-robotics/tesseract/issues/1035>`_)
-  * Use latest vcpkg release in windows action
-  * ci
-  * Fix deprecated boost filesystem functions
-* Fix use of boost stacktrace
-* Contributors: John Wason, Levi Armstrong
-
-0.23.0 (2024-07-24)
--------------------
-* Add any poly support to manipulator info
-* Add std::size_t to any poly types
-* Add integral any poly types
-* Add checkForUnknownKeys to yaml utils
-* Handle edge case in calcJacobianTransformErrorDiff
-* Improve any poly serialization macros
-* Fixes for building on Ubuntu Noble (`#1016 <https://github.com/tesseract-robotics/tesseract/issues/1016>`_)
-* Add missing serialization header to AnyPoly
-* Add support for shared pointers to tesseract_common::AnyPoly
-* Contributors: Levi Armstrong, Roelof Oomen
-
-0.22.2 (2024-06-10)
--------------------
-* Fix windows issue in kinematics_limits.h with using eigen array max and min
-* Add backtrace to type erasure casting to quickly identify where the issue location
-* Contributors: Levi Armstrong
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Fix deprecated exec_program command (`#1004 <https://github.com/tesseract-robotics/tesseract/issues/1004>`_)
-* Add binary data serialization support functions
-* Add support for jerk limits
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Faster pair hash for ACM
-* Fix bug in calcJacobianTransformErrorDiff
-* Correctly handle angle axis singularity when calculating numerical jacobian
-* Added application for performing convex decomposition (`#968 <https://github.com/tesseract-robotics/tesseract/issues/968>`_)
-* Contributors: Levi Armstrong, Michael Ripperger, Roelof Oomen
-
 0.21.5 (2023-12-14)
 -------------------
 * Add Mac OSX support (`#969 <https://github.com/tesseract-robotics/tesseract/issues/969>`_)

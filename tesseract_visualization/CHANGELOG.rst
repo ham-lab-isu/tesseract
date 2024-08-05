@@ -2,26 +2,6 @@
 Changelog for package tesseract_visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.23.1 (2024-07-28)
--------------------
-
-0.23.0 (2024-07-24)
--------------------
-* Fixes for building on Ubuntu Noble (`#1016 <https://github.com/tesseract-robotics/tesseract/issues/1016>`_)
-* Contributors: Roelof Oomen
-
-0.22.2 (2024-06-10)
--------------------
-
-0.22.1 (2024-06-03)
--------------------
-
-0.22.0 (2024-06-02)
--------------------
-* Leverage forward declarations to improve compile times (`#990 <https://github.com/tesseract-robotics/tesseract/issues/990>`_)
-* Trajectory player fixes (`#989 <https://github.com/tesseract-robotics/tesseract/issues/989>`_)
-* Contributors: Levi Armstrong, Roelof
-
 0.21.5 (2023-12-14)
 -------------------
 

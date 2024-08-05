@@ -26,12 +26,10 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
 #include <tesseract_support/tesseract_support_resource_locator.h>
-#include <tesseract_common/filesystem.h>
 
 namespace tesseract_common
 {
@@ -55,7 +53,7 @@ std::shared_ptr<Resource> TesseractSupportResourceLocator::locateResource(const 
     mod_url = package_path + mod_url;
   }
 
-  if (!tesseract_common::fs::path(mod_url).is_absolute())
+  if (!tesseract_common::fs::path(mod_url).is_complete())
     return nullptr;
 
   return std::make_shared<SimpleLocatedResource>(
@@ -71,5 +69,5 @@ void TesseractSupportResourceLocator::serialize(Archive& ar, const unsigned int 
 }  // namespace tesseract_common
 
 #include <tesseract_common/serialization.h>
-BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::TesseractSupportResourceLocator)
 TESSERACT_SERIALIZE_ARCHIVES_INSTANTIATE(tesseract_common::TesseractSupportResourceLocator)
+BOOST_CLASS_EXPORT_IMPLEMENT(tesseract_common::TesseractSupportResourceLocator)

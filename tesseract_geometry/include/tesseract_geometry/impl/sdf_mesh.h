@@ -28,17 +28,15 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
+#include <boost/serialization/access.hpp>
 #include <boost/serialization/export.hpp>
 #include <Eigen/Geometry>
 #include <memory>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
+#include <tesseract_geometry/geometry.h>
+#include <tesseract_geometry/impl/mesh_material.h>
 #include <tesseract_geometry/impl/polygon_mesh.h>
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_geometry
 {
@@ -68,12 +66,25 @@ public:
    */
   SDFMesh(std::shared_ptr<const tesseract_common::VectorVector3d> vertices,
           std::shared_ptr<const Eigen::VectorXi> triangles,
-          std::shared_ptr<const tesseract_common::Resource> resource = nullptr,
+          tesseract_common::Resource::Ptr resource = nullptr,
           const Eigen::Vector3d& scale = Eigen::Vector3d(1, 1, 1),
           std::shared_ptr<const tesseract_common::VectorVector3d> normals = nullptr,
           std::shared_ptr<const tesseract_common::VectorVector4d> vertex_colors = nullptr,
-          std::shared_ptr<MeshMaterial> mesh_material = nullptr,
-          std::shared_ptr<const std::vector<std::shared_ptr<MeshTexture>>> mesh_textures = nullptr);
+          MeshMaterial::Ptr mesh_material = nullptr,
+          std::shared_ptr<const std::vector<MeshTexture::Ptr>> mesh_textures = nullptr)
+    : PolygonMesh(std::move(vertices),
+                  std::move(triangles),
+                  std::move(resource),
+                  scale,
+                  std::move(normals),
+                  std::move(vertex_colors),
+                  std::move(mesh_material),
+                  std::move(mesh_textures),
+                  GeometryType::SDF_MESH)
+  {
+    if ((static_cast<long>(getFaceCount()) * 4) != getFaces()->size())
+      std::throw_with_nested(std::runtime_error("Mesh is not triangular"));  // LCOV_EXCL_LINE
+  }
 
   /**
    * @brief SDF Mesh geometry
@@ -93,17 +104,34 @@ public:
   SDFMesh(std::shared_ptr<const tesseract_common::VectorVector3d> vertices,
           std::shared_ptr<const Eigen::VectorXi> triangles,
           int triangle_count,
-          std::shared_ptr<const tesseract_common::Resource> resource = nullptr,
+          tesseract_common::Resource::ConstPtr resource = nullptr,
           const Eigen::Vector3d& scale = Eigen::Vector3d(1, 1, 1),
           std::shared_ptr<const tesseract_common::VectorVector3d> normals = nullptr,
           std::shared_ptr<const tesseract_common::VectorVector4d> vertex_colors = nullptr,
-          std::shared_ptr<MeshMaterial> mesh_material = nullptr,
-          std::shared_ptr<const std::vector<std::shared_ptr<MeshTexture>>> mesh_textures = nullptr);
+          MeshMaterial::Ptr mesh_material = nullptr,
+          std::shared_ptr<const std::vector<MeshTexture::Ptr>> mesh_textures = nullptr)
+    : PolygonMesh(std::move(vertices),
+                  std::move(triangles),
+                  triangle_count,
+                  std::move(resource),
+                  scale,
+                  std::move(normals),
+                  std::move(vertex_colors),
+                  std::move(mesh_material),
+                  std::move(mesh_textures),
+                  GeometryType::SDF_MESH)
+  {
+    if ((static_cast<long>(getFaceCount()) * 4) != getFaces()->size())
+      std::throw_with_nested(std::runtime_error("Mesh is not triangular"));  // LCOV_EXCL_LINE
+  }
 
   SDFMesh() = default;
   ~SDFMesh() override = default;
 
-  Geometry::Ptr clone() const override final;
+  Geometry::Ptr clone() const override
+  {
+    return std::make_shared<SDFMesh>(getVertices(), getFaces(), getFaceCount(), getResource(), getScale());
+  }
 
   bool operator==(const SDFMesh& rhs) const;
   bool operator!=(const SDFMesh& rhs) const;
@@ -115,5 +143,5 @@ private:
 };
 }  // namespace tesseract_geometry
 
-BOOST_CLASS_EXPORT_KEY(tesseract_geometry::SDFMesh)
+BOOST_CLASS_EXPORT_KEY2(tesseract_geometry::SDFMesh, "SDFMesh")
 #endif

@@ -3,18 +3,13 @@
 
 #include <tesseract_common/macros.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
-#include <boost/serialization/export.hpp>
+#include <boost/serialization/access.hpp>
 #include <string>
 #include <memory>
 #include <Eigen/Core>
 #include <unordered_map>
 #include <tesseract_common/types.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
-
-namespace boost::serialization
-{
-class access;
-}
 
 namespace tesseract_common
 {
@@ -48,7 +43,11 @@ public:
    */
   virtual void addAllowedCollision(const std::string& link_name1,
                                    const std::string& link_name2,
-                                   const std::string& reason);
+                                   const std::string& reason)
+  {
+    auto link_pair = tesseract_common::makeOrderedLinkPair(link_name1, link_name2);
+    lookup_table_[link_pair] = reason;
+  }
 
   /**
    * @brief Get all of the entries in the allowed collision matrix
@@ -56,20 +55,37 @@ public:
    *         collision entries. The keys of the unordered map are a std::pair
    *         of the link names in the allowed collision pair.
    */
-  const AllowedCollisionEntries& getAllAllowedCollisions() const;
+  const AllowedCollisionEntries& getAllAllowedCollisions() const { return lookup_table_; }
 
   /**
    * @brief Remove disabled collision pair from allowed collision matrix
    * @param obj1 Collision object name
    * @param obj2 Collision object name
    */
-  virtual void removeAllowedCollision(const std::string& link_name1, const std::string& link_name2);
+  virtual void removeAllowedCollision(const std::string& link_name1, const std::string& link_name2)
+  {
+    auto link_pair = tesseract_common::makeOrderedLinkPair(link_name1, link_name2);
+    lookup_table_.erase(link_pair);
+  }
 
   /**
    * @brief Remove disabled collision for any pair with link_name from allowed collision matrix
    * @param link_name Collision object name
    */
-  virtual void removeAllowedCollision(const std::string& link_name);
+  virtual void removeAllowedCollision(const std::string& link_name)
+  {
+    for (auto it = lookup_table_.begin(); it != lookup_table_.end() /* not hoisted */; /* no increment */)
+    {
+      if (it->first.first == link_name || it->first.second == link_name)
+      {
+        it = lookup_table_.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+  }
 
   /**
    * @brief This checks if two links are allowed to be in collision
@@ -77,26 +93,40 @@ public:
    * @param link_name2 Second link anme
    * @return True if allowed to be in collision, otherwise false
    */
-  virtual bool isCollisionAllowed(const std::string& link_name1, const std::string& link_name2) const;
+  virtual bool isCollisionAllowed(const std::string& link_name1, const std::string& link_name2) const
+  {
+    thread_local LinkNamesPair link_pair;
+    tesseract_common::makeOrderedLinkPair(link_pair, link_name1, link_name2);
+    return (lookup_table_.find(link_pair) != lookup_table_.end());
+  }
 
   /**
    * @brief Clears the list of allowed collisions, so that no collision will be
    *        allowed.
    */
-  void clearAllowedCollisions();
+  void clearAllowedCollisions() { lookup_table_.clear(); }
 
   /**
    * @brief Inserts an allowable collision matrix ignoring duplicate pairs
    * @param acm ACM to be inserted
    */
-  void insertAllowedCollisionMatrix(const AllowedCollisionMatrix& acm);
+  void insertAllowedCollisionMatrix(const AllowedCollisionMatrix& acm)
+  {
+    lookup_table_.insert(acm.getAllAllowedCollisions().begin(), acm.getAllAllowedCollisions().end());
+  }
 
   /**
    * @brief Reserve space for the internal data storage
    * @param size The size to reserve
    */
-  void reserveAllowedCollisionMatrix(std::size_t size);
+  void reserveAllowedCollisionMatrix(std::size_t size) { lookup_table_.reserve(size); }
 
+  friend std::ostream& operator<<(std::ostream& os, const AllowedCollisionMatrix& acm)
+  {
+    for (const auto& pair : acm.getAllAllowedCollisions())
+      os << "link=" << pair.first.first << " link=" << pair.first.second << " reason=" << pair.second << std::endl;
+    return os;
+  }
   bool operator==(const AllowedCollisionMatrix& rhs) const;
   bool operator!=(const AllowedCollisionMatrix& rhs) const;
 
@@ -108,9 +138,10 @@ private:
   void serialize(Archive& ar, const unsigned int version);  // NOLINT
 };
 
-std::ostream& operator<<(std::ostream& os, const AllowedCollisionMatrix& acm);
 }  // namespace tesseract_common
 
-BOOST_CLASS_EXPORT_KEY(tesseract_common::AllowedCollisionMatrix)
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/tracking.hpp>
+BOOST_CLASS_EXPORT_KEY2(tesseract_common::AllowedCollisionMatrix, "AllowedCollisionMatrix")
 
 #endif  // TESSERACT_SCENE_GRAPH_ALLOWED_COLLISION_MATRIX_H
